@@ -1,5 +1,5 @@
 # Local setup instructions
-### (1) Install Anaconda if not already installed (mainluy for creating a separate environment, you can use plain python as well)
+### (1) Install Anaconda if not already installed (mainly for creating a separate environment, you can use plain python as well)
 ### (2) Save the secrets.json file in the root of the Fall2024 folder
 ### (3) Setup a new environment (python 3.12 is required as some packages don't support later versions)
 conda create --name tdbank24 python=3.12

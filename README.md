@@ -6,16 +6,11 @@ This course provides a unique opportunity for students in the MS in Data Science
 
 ## Team Structure
 
-Select a team captain (with or without help from mentor/instructor/supervisor)
-
-Record your names here in this format-
 1. Xiqian Yuan, xy2655 (team captain)
 2. Sam Gabor, sg662
 3. Gregor Zdunski Hanuschak, gzh2101
 4. Brianna Hoang Yen Ta, bht2118
 5. Dai Dai, yd2765
-
-and so on.   
 
 ## Instructions
 

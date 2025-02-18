@@ -5,7 +5,7 @@
 conda create --name tdbank24 python=3.12
 ### (4) Activate new environment
 conda activate tdbank24
-### (5) Install the requirements for the new environment, we have to use pip because some packages are not aailable thru conda sources
+### (5) Install the requirements for the new environment, we have to use pip because some packages are not available thru conda sources
 pip install -r requirements.txt
 ### (6) Run streamlit locally (if you'r running on Windows prefix below command with start)
 streamlit run chatbot.py

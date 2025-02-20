@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from langchain.chains.llm import LLMChain
+from langchain.schema.runnable import RunnableSequence
 from langchain_core.prompts import PromptTemplate
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from pinecone import Pinecone, ServerlessSpec
@@ -46,7 +46,7 @@ class EnhancedResponseChain:
         PROMPT = PromptTemplate(template=self.prompt_template,
                                 input_variables=["conversation_history", "context", "question"])
         llm = ChatOpenAI(model_name="gpt-4", temperature=0)
-        self.llm_chain = LLMChain(llm=llm, prompt=PROMPT)
+        self.llm_chain = PROMPT | llm
 
     def cosine_similarity(self, vec1, vec2):
         """Compute cosine similarity between two vectors."""
@@ -136,11 +136,13 @@ class EnhancedResponseChain:
             for vector in top_context_vectors
         ])
 
-        result = self.llm_chain.run(
-            conversation_history=conversation_history,
-            context=context,
-            question=question
-        )
+        response = self.llm_chain.invoke({
+            "conversation_history": conversation_history,
+            "context": context,
+            "question": question
+        })
+
+        result = response.content
 
         return result, top_context_vectors
 

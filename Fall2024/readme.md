@@ -38,7 +38,7 @@ Below is skeleton JSON for each file, assigned API keys are masked.
     "langchain_api_key": "ASSIGNED_API_KEY_HERE",
     "cohere_api_key": "ASSIGNED_API_KEY_HERE"
 }
-
+```
 
 - secrets_ollama.json
 
@@ -50,7 +50,7 @@ Below is skeleton JSON for each file, assigned API keys are masked.
     "langchain_api_key": "ASSIGNED_API_KEY_HERE",
     "cohere_api_key": "ASSIGNED_API_KEY_HERE"    
 }
-
+```
 
 - secrets_azure.json (only create if you use Azure)
 
@@ -63,6 +63,7 @@ Below is skeleton JSON for each file, assigned API keys are masked.
     "langchain_api_key": "ASSIGNED_API_KEY_HERE",
     "cohere_api_key": "ASSIGNED_API_KEY_HERE"    
 }
+```
 
 ### (9) Run streamlit locally
 

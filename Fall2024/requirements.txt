@@ -17,3 +17,5 @@ trulens_eval
 pymupdf
 faiss-cpu
 pypdf
+
+cohere

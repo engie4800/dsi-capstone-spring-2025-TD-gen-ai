@@ -1,17 +1,24 @@
+
 from datetime import datetime
 
 from langchain.schema.runnable import RunnableSequence
 from langchain_core.prompts import PromptTemplate
-from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+from langchain_openai import OpenAIEmbeddings,AzureOpenAIEmbeddings,ChatOpenAI,AzureChatOpenAI
 from pinecone import Pinecone, ServerlessSpec
 from langchain_pinecone import PineconeVectorStore
+
+from .OllamaEmbeddings import OllamaEmbeddings
+
+
 # import warnings
 
 # warnings.filterwarnings("ignore")
 
-
 class EnhancedResponseChain:
-    def __init__(self, secrets):
+    def __init__(self, secrets, backend, llm_model_name, embed_model_name, pine_index_name):
+
+        #print(f"EnhancedResponseChain: Chatting using backend {backend} with llm {llm_model_name}, embed {embed_model_name}, and Pinecone index {pine_index_name}...")
+
         # Initialize Pinecone client with your specific configuration
         pc = Pinecone(api_key=secrets["pinecone_api_key"])
 
@@ -21,10 +28,42 @@ class EnhancedResponseChain:
             region='starter'  # Adjust to match your actual setup, like 'us-west-2' or 'us-east-1' if needed
         )
 
-        self.embeddings = OpenAIEmbeddings()
+        if backend in ["openai"]:
+            self.embeddings = OpenAIEmbeddings()
+            llm = ChatOpenAI(
+                model=llm_model_name,
+                temperature=0,
+                api_key=secrets["openai_api_key"],
+                openai_api_base=secrets["openai_api_endpoint"],
+            )                    
+        elif backend in ["azure"]:
+            self.embeddings = AzureOpenAIEmbeddings(
+                model=embed_model_name,
+                azure_endpoint=secrets["openai_api_endpoint"],
+                api_key=secrets["openai_api_key"],
+                openai_api_version=secrets["openai_api_version"],
+            )
+            llm = AzureChatOpenAI(
+                model=llm_model_name,
+                temperature=0,
+                max_retries=2,
+                azure_endpoint=secrets["openai_api_endpoint"],
+                api_key=secrets["openai_api_key"],
+                openai_api_version=secrets["openai_api_version"]            
+            )
+        elif backend in ["ollama"]:
+            self.embeddings = OllamaEmbeddings(model_name=embed_model_name)
+            llm = ChatOpenAI(
+                model=llm_model_name,
+                temperature=0,
+                api_key=secrets["openai_api_key"],
+                openai_api_base=secrets["openai_api_endpoint"],
+            )                    
+        else:
+            raise ValueError(f"Unknown backend: {backend}, must be 'ollama', 'azure', or 'openai'")
 
         # Connect to the 'td-bank-docs' index
-        self.index = pc.Index("td-bank-docs", spec=serverless_spec)
+        self.index = pc.Index(pine_index_name, spec=serverless_spec)
         self.vector_store = PineconeVectorStore(self.index, embedding=self.embeddings, text_key="content")
 
         # Create prompt template
@@ -45,7 +84,8 @@ class EnhancedResponseChain:
         """
         PROMPT = PromptTemplate(template=self.prompt_template,
                                 input_variables=["conversation_history", "context", "question"])
-        llm = ChatOpenAI(model_name="gpt-4", temperature=0)
+        
+
         self.llm_chain = PROMPT | llm
 
     def cosine_similarity(self, vec1, vec2):

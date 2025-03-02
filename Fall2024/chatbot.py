@@ -4,6 +4,12 @@ import os
 import json
 import argparse
 
+
+def write_no_latex(*args, **kwargs):
+    """Custom st.write() that disables LaTeX rendering."""
+    text = str(args[0])
+    st.markdown(f"<pre>{text}</pre>", unsafe_allow_html=True)
+
 def chatter(backend="ollama", llm_model_name="default", embed_model_name="default", pine_index_name="td-bank-docs-new"):
     """
     Function to run the chatbot application.
@@ -45,6 +51,9 @@ def chatter(backend="ollama", llm_model_name="default", embed_model_name="defaul
     os.environ["LANGCHAIN_ENDPOINT"] = "https://api.smith.langchain.com"
     os.environ["LANGCHAIN_PROJECT"] = "TD-LLM"
     os.environ["PINECONE_API_KEY"] = secrets["pinecone_api_key"]
+
+    # Override st.write globally to disable LaTeX rendering
+    st.write = write_no_latex
 
     # Initialize agent with secrets
     agent = EnhancedAgent(secrets, backend=backend, llm_model_name=llm_model_name, embed_model_name=embed_model_name, pine_index_name=pine_index_name)

@@ -124,7 +124,7 @@ class EnhancedResponseChain:
         ]
         return vectors
 
-    def filter_by_filename_similarity(self, vectors, query, threshold=0.5):
+    def filter_by_filename_similarity(self, vectors, query, threshold=0.4):
         """Filter vectors based on semantic similarity between the query and filenames."""
         query_embedding = self.embeddings.embed_query(query)
         filtered_vectors = []
@@ -156,8 +156,13 @@ class EnhancedResponseChain:
         # Retrieve initial candidate vectors
         candidates = self.retrieve_candidates(question)
 
+        print(f"Retrieved {len(candidates)} candidates from Pinecone.")
+
         # Step 1: Filter by filename similarity (if filenames are inferred)
         filtered_vectors = self.filter_by_filename_similarity(candidates, query=question)
+
+        print(f"Filtered down to {len(filtered_vectors)} candidates based on filename similarity")
+
 
         # Step 2: Further filter by metadata (if specific metadata is provided or inferred)
         metadata_filter = {
@@ -167,6 +172,7 @@ class EnhancedResponseChain:
             "publication_date": "",
         }
         if any(metadata_filter.values()):
+            print(f"Further filtering based on metadata: {metadata_filter}")
             filtered_vectors = self.filter_by_metadata(filtered_vectors, metadata_filter)
 
         # Build context from the filtered results
@@ -176,13 +182,22 @@ class EnhancedResponseChain:
             for vector in top_context_vectors
         ])
 
+        #print(f"Using the following context for the question:\n{context}")
+
+        # escaped_context = context.replace("$", "\\$")
+        # print(f"Escaped context: {escaped_context}")
+
+
         response = self.llm_chain.invoke({
             "conversation_history": conversation_history,
             "context": context,
             "question": question
         })
+        # escaped_response = response.content.replace("$", "\\$")
+        #print(f"Generated response: {response.content}")
 
         result = response.content
+        #result = escaped_response
 
         return result, top_context_vectors
 

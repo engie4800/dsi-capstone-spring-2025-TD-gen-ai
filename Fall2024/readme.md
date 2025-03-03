@@ -70,6 +70,7 @@ Below is skeleton JSON for each file, assigned API keys are masked.
 Streamlit does not support passing command line arguments to ivoked python scripts, so we have to pass through the OS environment. I created shell scripts for that below.
 
 - For Windows: Use either start_streamlit_openai.bat or start_streamlit_ollama.bat
-- For Mac/Linux: Use either start_streamlit_openai.sh or start_streamlit_ollama.sh
+- For Linux: Use either start_streamlit_openai.sh or start_streamlit_ollama.sh
+- For  Mac: Use either ./start_streamlit_openai.sh or ./start_streamlit_ollama.sh
 
 

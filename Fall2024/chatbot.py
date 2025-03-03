@@ -40,7 +40,7 @@ def chatter(backend="ollama", llm_model_name="default", embed_model_name="defaul
     print(f"Chatting using backend {backend} with llm {llm_model_name}, embed {embed_model_name}, and Pinecone index {pine_index_name}...")
 
     # Load secrets info from appropriate backend secrets file
-    secrets_filename = f"secrets-{backend}.json"
+    secrets_filename = f"secrets_{backend}.json"
     with open(secrets_filename) as f:
         secrets = json.load(f)
 

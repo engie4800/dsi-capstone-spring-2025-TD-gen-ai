@@ -83,7 +83,8 @@ class EnhancedResponseChain:
         PROMPT = PromptTemplate(template=self.prompt_template,
                                 input_variables=["conversation_history", "context", "question"])
         
-        self.llm_chain = LLMChain(llm=llm, prompt=PROMPT)
+        #self.llm_chain = LLMChain(llm=llm, prompt=PROMPT)
+        self.llm_chain = PROMPT | llm
 
     def cosine_similarity(self, vec1, vec2):
         """Compute cosine similarity between two vectors."""
@@ -162,9 +163,10 @@ class EnhancedResponseChain:
                 documents=[doc["content"] for doc in documents],
                 top_n=top_n
             )
+
             # Return docs in the order given by Cohere
             # result.index refers to the position in the original documents list
-            return [documents[result.index] for result in results]
+            return [documents[result.index] for result in results.results]
         except Exception as e:
             print(f"Cohere reranking error: {e}")
             # Fall back to top_n from the original documents
@@ -174,8 +176,16 @@ class EnhancedResponseChain:
         # Retrieve initial candidate vectors
         candidates = self.retrieve_candidates(question)
 
+        print(f"Retrieved {len(candidates)} candidates from Pinecone.")
+
         # Step 1: Filter by filename similarity (if filenames are inferred)
         filtered_vectors = self.filter_by_filename_similarity(candidates, query=question)
+        if (len(filtered_vectors) == 0):
+            # no similar entries based on filename (this happens if the user doesn't explicitly reference a doc type)
+            print("No vectors found based on filename similarity. Using all candidates.")
+            filtered_vectors = candidates
+        else:
+            print(f"Filtered down to {len(filtered_vectors)} candidates based on filename similarity")
 
         # Step 2: Further filter by metadata (if specific metadata is provided or inferred)
         metadata_filter = {
@@ -187,6 +197,8 @@ class EnhancedResponseChain:
         if any(metadata_filter.values()):
             filtered_vectors = self.filter_by_metadata(filtered_vectors, metadata_filter)
         
+        
+
         # Add rerank step
         reranked_vectors = self.rerank_with_cohere(
             query=question,
@@ -202,12 +214,18 @@ class EnhancedResponseChain:
             for vector in top_context_vectors
         ])
 
-        result = self.llm_chain.run(
-            conversation_history=conversation_history,
-            context=context,
-            question=question
-        )
+        # result = self.llm_chain.run(
+        #     conversation_history=conversation_history,
+        #     context=context,
+        #     question=question
+        # )
 
+        response = self.llm_chain.invoke({
+            "conversation_history": conversation_history,
+            "context": context,
+            "question": question
+        })        
+        result = response.content
         return result, top_context_vectors
 
     def invoke(self, question, conversation_history):

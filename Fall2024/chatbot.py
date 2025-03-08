@@ -7,10 +7,17 @@ import argparse
 
 def write_no_latex(*args, **kwargs):
     """Custom st.write() that disables LaTeX rendering."""
-    text = str(args[0])
-    st.markdown(f"<pre>{text}</pre>", unsafe_allow_html=True)
+    escaped_args = [
+        str(arg).replace("$", "\\$") if isinstance(arg, str) else arg
+        for arg in args
+    ]
+    
+    # Join all arguments with spaces (mimicking st.write behavior)
+    text = " ".join(map(str, escaped_args))
+    st.markdown(text,unsafe_allow_html=True)   
 
-def chatter(backend="ollama", llm_model_name="default", embed_model_name="default", pine_index_name="td-bank-docs-new"):
+
+def chatter(backend="ollama", llm_model_name="default", embed_model_name="default", pine_index_name="td-bank-docs-new", use_cohere=True):
     """
     Function to run the chatbot application.
     
@@ -37,7 +44,7 @@ def chatter(backend="ollama", llm_model_name="default", embed_model_name="defaul
 
 
 
-    print(f"Chatting using backend {backend} with llm {llm_model_name}, embed {embed_model_name}, and Pinecone index {pine_index_name}...")
+    print(f"Chatting using backend {backend} with llm {llm_model_name}, embed {embed_model_name}, and Pinecone index {pine_index_name}, use_cohere {use_cohere} ...")
 
     # Load secrets info from appropriate backend secrets file
     secrets_filename = f"secrets_{backend}.json"
@@ -56,7 +63,7 @@ def chatter(backend="ollama", llm_model_name="default", embed_model_name="defaul
     st.write = write_no_latex
 
     # Initialize agent with secrets
-    agent = EnhancedAgent(secrets, backend=backend, llm_model_name=llm_model_name, embed_model_name=embed_model_name, pine_index_name=pine_index_name)
+    agent = EnhancedAgent(secrets, backend=backend, llm_model_name=llm_model_name, embed_model_name=embed_model_name, pine_index_name=pine_index_name,use_cohere=use_cohere)
 
     # Chatbot Application
     if "messages" not in st.session_state:
@@ -128,8 +135,9 @@ def main():
     llm_model_name = os.getenv("llm_model_name", "default")
     embed_model_name = os.getenv("embed_model_name", "default")
     pine_index_name = os.getenv("pine_index_name", "td-bank-docs-new")
+    use_cohere = eval(os.getenv("use_cohere", "True"))
 
-    chatter(backend, llm_model_name, embed_model_name, pine_index_name)
+    chatter(backend, llm_model_name, embed_model_name, pine_index_name, use_cohere)
 
 
 # Entry point

@@ -2,3 +2,8 @@ Fall2024/secrets.json
 Fall2024/secrets-openai.json
 Fall2024/secrets-azure.json
 Fall2024/secrets-ollama.json
+Fall2024/secrets_azure.json
+Fall2024/secrets_ollama.json
+Fall2024/secrets_openai.json
+/Fall2024/codes/__pycache__
+

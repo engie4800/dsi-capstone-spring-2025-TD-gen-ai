@@ -1,3 +1,4 @@
+import cohere
 
 from datetime import datetime
 
@@ -15,7 +16,7 @@ from .OllamaEmbeddings import OllamaEmbeddings
 # warnings.filterwarnings("ignore")
 
 class EnhancedResponseChain:
-    def __init__(self, secrets, backend, llm_model_name, embed_model_name, pine_index_name):
+    def __init__(self, secrets, backend, llm_model_name, embed_model_name, pine_index_name, use_cohere):
 
         #print(f"EnhancedResponseChain: Chatting using backend {backend} with llm {llm_model_name}, embed {embed_model_name}, and Pinecone index {pine_index_name}...")
 
@@ -65,6 +66,8 @@ class EnhancedResponseChain:
         # Connect to the 'td-bank-docs' index
         self.index = pc.Index(pine_index_name, spec=serverless_spec)
         self.vector_store = PineconeVectorStore(self.index, embedding=self.embeddings, text_key="content")
+        self.cohere_client = cohere.Client(secrets["cohere_api_key"])
+        self.use_cohere = use_cohere        
 
         # Create prompt template
         self.prompt_template = """
@@ -152,6 +155,29 @@ class EnhancedResponseChain:
                 filtered_vectors.append(vector)
         return filtered_vectors
 
+    # New Cohere Reranker Function
+    def rerank_with_cohere(self, query, documents, top_n):
+        """
+        Rerank the given documents with Cohere's rerank API.
+        Each document must have a 'content' key to pass to Cohere.
+        """
+        try:
+            results = self.cohere_client.rerank(
+                model="rerank-english-v3.0",
+                query=query,
+                documents=[doc["content"] for doc in documents],
+                top_n=top_n
+            )
+
+            # Return docs in the order given by Cohere
+            # result.index refers to the position in the original documents list
+            return [documents[result.index] for result in results.results]
+        except Exception as e:
+            print(f"Cohere reranking error: {e}")
+            # Fall back to top_n from the original documents
+            return documents[:top_n]
+
+
     def answer_question_with_citations(self, question, conversation_history):
         # Retrieve initial candidate vectors
         candidates = self.retrieve_candidates(question)
@@ -175,12 +201,29 @@ class EnhancedResponseChain:
             print(f"Further filtering based on metadata: {metadata_filter}")
             filtered_vectors = self.filter_by_metadata(filtered_vectors, metadata_filter)
 
-        # Build context from the filtered results
-        top_context_vectors = filtered_vectors[:10]  # Use only the top 10 for context
-        context = "\n\n".join([
-            f"Page {vector['page_range']} (File: {vector['file_name']}): {vector['summary']}"
-            for vector in top_context_vectors
-        ])
+        if self.use_cohere:
+            # Add rerank step
+            reranked_vectors = self.rerank_with_cohere(
+                query=question,
+                documents=filtered_vectors,
+                top_n=10
+            )
+            top_context_vectors = reranked_vectors[:10]
+            context = "\n\n".join([
+                f"Page {vector['page_range']} (File: {vector['file_name']}): {vector['summary']}"
+                for vector in top_context_vectors
+            ])
+            print(f"Reranked down to {len(reranked_vectors)} candidates using Cohere.")         
+        else:
+            # Build context from the filtered results
+            top_context_vectors = filtered_vectors[:10]  # Use only the top 10 for context
+            context = "\n\n".join([
+                f"Page {vector['page_range']} (File: {vector['file_name']}): {vector['summary']}"
+                for vector in top_context_vectors
+            ])     
+
+
+
 
         #print(f"Using the following context for the question:\n{context}")
 

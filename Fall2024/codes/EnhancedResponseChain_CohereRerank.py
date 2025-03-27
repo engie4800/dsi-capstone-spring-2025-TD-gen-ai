@@ -160,7 +160,7 @@ class EnhancedResponseChain:
 
         # Build context from the filtered results
         # top_context_vectors = filtered_vectors[:10]  # Use only the top 10 for context
-        top_context_vectors = reranked_vectors[:10]
+        top_context_vectors = reranked_vectors[:10] # shouldn't it already only have the top 10 vectors because of the cohere top_n parameter?
         context = "\n\n".join([
             f"Page {vector['page_range']} (File: {vector['file_name']}): {vector['summary']}"
             for vector in top_context_vectors

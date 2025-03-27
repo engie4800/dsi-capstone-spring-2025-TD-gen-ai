@@ -4,6 +4,10 @@ import uuid
 from datetime import datetime
 from time import sleep
 from typing import List, Dict
+import numpy as np
+import torch
+from transformers import AutoTokenizer, AutoModel
+from sklearn.preprocessing import normalize
 
 from langchain_community.document_loaders import PyPDFLoader
 from tqdm import tqdm
@@ -35,6 +39,12 @@ class DocumentProcessor:
         self.llm = ChatOpenAI(model_name="gpt-4", temperature=0)
         self.sentence_transformer = SentenceTransformer('all-MiniLM-L6-v2')
         self.embeddings = OpenAIEmbeddings()
+        
+        # Initialize SPLADE
+        self.splade_tokenizer = AutoTokenizer.from_pretrained("naver/splade-cocondenser-ensembledistil")
+        self.splade_model = AutoModel.from_pretrained("naver/splade-cocondenser-ensembledistil")
+        if torch.cuda.is_available():
+            self.splade_model = self.splade_model.to('cuda')
 
     def find_pdf_files(self, root_dir: str) -> List[Path]:
         """Recursively find all PDF files in the root directory"""
@@ -136,6 +146,30 @@ class DocumentProcessor:
         response = self.llm.invoke(cleaning_prompt)
         cleaned_content = response.content.strip() if response and hasattr(response, 'content') else content
         return cleaned_content
+
+    def tokenize(self, text: str) -> List[str]:
+        """Simple tokenization function"""
+        return text.lower().split()
+
+    def get_splade_embedding(self, text: str) -> np.ndarray:
+        """Generate sparse embedding using SPLADE model"""
+        # Tokenize and prepare input
+        inputs = self.splade_tokenizer(text, return_tensors="pt", padding=True, truncation=True, max_length=512)
+        if torch.cuda.is_available():
+            inputs = {k: v.to('cuda') for k, v in inputs.items()}
+
+        # Get model output
+        with torch.no_grad():
+            output = self.splade_model(**inputs)
+        
+        # Get attention weights and convert to sparse embedding
+        attention = output.last_hidden_state.mean(dim=1)  # Average attention across sequence
+        sparse_embedding = attention.squeeze().cpu().numpy()
+        
+        # Normalize the embedding
+        sparse_embedding = normalize(sparse_embedding.reshape(1, -1))[0]
+        
+        return sparse_embedding
 
     def process_pdf_by_sections(self, file_path: str) -> tuple:
         """Process PDF by detecting topic changes with a rolling window approach."""
@@ -248,7 +282,11 @@ class DocumentProcessor:
             print("\nGenerating embeddings...")
             for chunk in tqdm(chunks, desc="Generating embeddings"):
                 try:
+                    # Generate dense embedding
                     content_embedding = self.embeddings.embed_query(chunk.page_content)
+                    
+                    # Generate sparse embedding (SPLADE)
+                    sparse_embedding = self.get_splade_embedding(chunk.page_content)
 
                     metadata = {
                         "content": chunk.page_content[:40000],
@@ -257,7 +295,8 @@ class DocumentProcessor:
                         "publication_date": chunk.metadata.get("publication_date", ""),
                         "file_name": chunk.metadata.get("file_name", ""),
                         "page_range": chunk.metadata.get("page_range", ""),
-                        "content_type": chunk.metadata.get("content_type", "")
+                        "content_type": chunk.metadata.get("content_type", ""),
+                        "sparse_embedding": sparse_embedding.tolist()  # Store sparse embedding in metadata
                     }
 
                     pinecone_data.append({
@@ -320,29 +359,45 @@ class DocumentProcessor:
             # Add delay between files
             sleep(2)
 
-    def search_pinecone(self, query: str, top_k: int = 4) -> List[Dict]:
-        """Search Pinecone index for similar documents
+    def search_pinecone(self, query: str, top_k: int = 4, alpha: float = 0.5) -> List[Dict]:
+        """Search Pinecone index using hybrid search (SPLADE + dense)
 
         Args:
             query (str): The search query
             top_k (int, optional): Number of results to return. Defaults to 4.
+            alpha (float, optional): Weight for dense embeddings (1-alpha for sparse). Defaults to 0.5.
 
         Returns:
             List[Dict]: List of search results with metadata
         """
-        # Generate query embedding
+        # Generate dense query embedding
         query_embedding = self.embeddings.embed_query(query)
+        
+        # Generate sparse query embedding (SPLADE)
+        sparse_embedding = self.get_splade_embedding(query)
 
         # Search Pinecone
         search_results = self.index.query(
             vector=query_embedding,
-            top_k=top_k,
+            top_k=top_k * 2,  # Get more results to combine with sparse scores
             include_metadata=True
         )
 
+        # Combine dense and sparse scores
+        combined_scores = []
+        for result in search_results['matches']:
+            dense_score = result['score']
+            sparse_score = np.dot(sparse_embedding, result['metadata']['sparse_embedding'])
+            combined_score = alpha * dense_score + (1 - alpha) * sparse_score
+            combined_scores.append((combined_score, result))
+
+        # Sort by combined score and take top_k
+        combined_scores.sort(reverse=True, key=lambda x: x[0])
+        final_results = [result for _, result in combined_scores[:top_k]]
+
         # Print results
         print(f"\nTop {top_k} results for query: '{query}'")
-        for i, result in enumerate(search_results['matches'], 1):
+        for i, result in enumerate(final_results, 1):
             metadata = result.get('metadata', {})
             document_type = metadata.get('document_type', 'Unknown Document Type')
             file_name = metadata.get('file_name', 'Unknown File Name')
@@ -358,4 +413,4 @@ class DocumentProcessor:
             print(f"Content Type: {chunk_type}")
             print(f"Content Preview: {content_preview}...")
 
-        return search_results['matches']
+        return final_results

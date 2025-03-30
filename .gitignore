@@ -1,0 +1,10 @@
+preprocessing/.idea/Chatter.iml
+preprocessing/.idea/inspectionProfiles/profiles_settings.xml
+preprocessing/.idea/misc.xml
+preprocessing/.idea/modules.xml
+preprocessing/.idea/vcs.xml
+preprocessing/.idea/workspace.xml
+/preprocessing/__pycache__
+preprocessing/secrets-azure.json
+preprocessing/secrets-ollama.json
+preprocessing/secrets-openai.json

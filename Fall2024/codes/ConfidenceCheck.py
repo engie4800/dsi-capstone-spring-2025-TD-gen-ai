@@ -10,7 +10,7 @@ class ConfidenceChecker:
     A confidence checker that uses DeepEval's GEval to compare actual_output and expected_output.
     """
 
-    def __init__(self, threshold: float = 0.7):
+    def __init__(self, threshold: float = 0.5):
         self.threshold = threshold
 
         # Define a GEval metric that only looks at INPUT and ACTUAL_OUTPUT
@@ -26,9 +26,6 @@ class ConfidenceChecker:
         )
 
     def measure_confidence(self, question: str, actual_output: str) -> float:
-        """
-        Measure correctness using the DeepEval metric.
-        """
         test_case = LLMTestCase(
             input=question,
             actual_output=actual_output,
@@ -38,9 +35,6 @@ class ConfidenceChecker:
         return self.correctness_metric.score
     
     def check_and_abstain(self, question: str, actual_output: str):
-        """
-        Compute a 'confidence' score using measure_confidence (no expected_output).
-        """
         score = self.measure_confidence(question, actual_output)
         reason = self.correctness_metric.reason
 

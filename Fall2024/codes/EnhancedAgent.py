@@ -5,7 +5,7 @@ from codes.ConfidenceCheck import ConfidenceChecker
 class EnhancedAgent:
     def __init__(self, secrets,backend, llm_model_name, embed_model_name, pine_index_name, use_cohere):
         self.retriever = EnhancedResponseChain(secrets, backend, llm_model_name, embed_model_name, pine_index_name, use_cohere)
-        self.confidence_checker = ConfidenceChecker(threshold=0.7)
+        self.confidence_checker = ConfidenceChecker(threshold=0.5)
 
     def invoke(self, query, conversation_history="", expected_output=None):
         #return self.retriever.invoke(query, conversation_history)

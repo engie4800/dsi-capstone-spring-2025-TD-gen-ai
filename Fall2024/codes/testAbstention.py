@@ -73,34 +73,9 @@ for question in questions:
             "Generated Answer": result,
             "Confidence Score": confidence_score,
             "Reasoon": reason,
-            "abstained": confidence_score > 0.7
+            "abstained": confidence_score < 0.5
         })
 
-# Save results to a JSON file
 output_file_path = os.path.join(os.path.dirname(__file__), "test_results.json")
 with open(output_file_path, "w") as output_file:
     json.dump(results, output_file, indent=4)
-
-
-
-
-# question = " How did TD Bank's active digital customer base grow from 2021 to 2023?"
-# conversation_history = "" # actual output
-
-
-# result, confidence_score, reason = agent.invoke(
-#     question, conversation_history
-# )
-
-
-# print("\n=== TESTING ABSTENTION (DEEPEVAL) ===")
-# print(f"Question: {question}")
-# print(f"Generated Answer: {result}")
-# print(f"Confidence Score: {confidence_score:.2f}")
-# print(f"Reason: {reason}")
-# print(f"Threshold: 0.7")
-
-# if result == "Abstain":
-#     print("The system abstained due to low confidence.")
-# else:
-#     print("The system provided an answer with sufficient confidence.")

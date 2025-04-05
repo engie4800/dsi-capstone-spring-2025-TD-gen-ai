@@ -1,7 +1,3 @@
-import sys
-import types
-
-# Patch torch._classes to avoid Streamlit inspection crash
 import torch
 torch.classes.__path__ = []
 

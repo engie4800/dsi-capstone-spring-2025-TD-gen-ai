@@ -57,7 +57,7 @@ class EnhancedResponseChain:
         PROMPT = PromptTemplate(template=self.prompt_template,
                                 input_variables=["conversation_history", "context", "question"])
         llm = ChatOpenAI(model_name="gpt-4", temperature=0)
-        self.llm_chain = LLMChain(llm=llm, prompt=PROMPT)
+        self.llm_chain = PROMPT | llm
 
     def cosine_similarity(self, vec1, vec2):
         """Compute cosine similarity between two vectors."""

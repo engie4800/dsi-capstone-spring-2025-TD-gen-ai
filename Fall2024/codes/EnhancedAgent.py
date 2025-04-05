@@ -1,4 +1,5 @@
-from codes.EnchancedResponseChain import EnhancedResponseChain #this import is using the original enhancedresponsechain instead of the cohere one
+#from codes.EnhancedResponseChain import EnhancedResponseChain #this import is using the original enhancedresponsechain instead of the cohere one
+from codes.EnhancedResponseChain_CohereRerank import EnhancedResponseChain #this uses cohere rerank
 
 class EnhancedAgent:
     def __init__(self, secrets):

@@ -1,3 +1,10 @@
+import sys
+import types
+
+# Patch torch._classes to avoid Streamlit inspection crash
+import torch
+torch.classes.__path__ = []
+
 import streamlit as st
 from codes.EnhancedAgent import EnhancedAgent
 import os

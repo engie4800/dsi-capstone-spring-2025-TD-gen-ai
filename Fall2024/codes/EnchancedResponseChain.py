@@ -5,6 +5,10 @@ from langchain_core.prompts import PromptTemplate
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from pinecone import Pinecone, ServerlessSpec
 from langchain_pinecone import PineconeVectorStore
+import numpy as np
+from sklearn.preprocessing import normalize
+from transformers import AutoTokenizer, AutoModel
+import torch
 # import warnings
 
 # warnings.filterwarnings("ignore")
@@ -26,6 +30,11 @@ class EnhancedResponseChain:
         # Connect to the 'td-bank-docs' index
         self.index = pc.Index("td-bank-docs", spec=serverless_spec)
         self.vector_store = PineconeVectorStore(self.index, embedding=self.embeddings, text_key="content")
+
+        self.splade_tokenizer = AutoTokenizer.from_pretrained("naver/splade-cocondenser-ensembledistil")
+        self.splade_model = AutoModel.from_pretrained("naver/splade-cocondenser-ensembledistil")
+        if torch.cuda.is_available():
+            self.splade_model = self.splade_model.to('cuda')
 
         # Create prompt template
         self.prompt_template = """
@@ -64,11 +73,38 @@ class EnhancedResponseChain:
                 return datetime.strptime(date_str, "%Y").date()
             except ValueError:
                 return None
+            
+    def get_splade_embedding(self, text):
+        inputs = self.splade_tokenizer(text, return_tensors="pt", padding=True, truncation=True, max_length=512)
+        if torch.cuda.is_available():
+            inputs = {k: v.to('cuda') for k, v in inputs.items()}
 
-    def retrieve_candidates(self, query, top_k=100):
+        with torch.no_grad():
+            output = self.splade_model(**inputs)
+
+        sparse_embedding = output.last_hidden_state.mean(dim=1).squeeze().cpu().numpy()
+        sparse_embedding = normalize(sparse_embedding.reshape(1, -1))[0]
+        return sparse_embedding
+
+    def retrieve_candidates(self, query, top_k=100, alpha=0.5):
         """Retrieve initial candidates from Pinecone based on semantic similarity to the query."""
-        query_embedding = self.embeddings.embed_query(query)
-        results = self.index.query(vector=query_embedding, top_k=top_k, include_metadata=True)
+        dense_query = self.embeddings.embed_query(query)
+        sparse_query = self.get_splade_embedding(query)
+
+        results = self.index.query(vector=dense_query, top_k=top_k * 2, include_metadata=True)
+
+        scored_results = []
+        for match in results["matches"]:
+            sparse_doc = match["metadata"].get("sparse_embedding", [])
+            if sparse_doc:
+                sparse_score = float(np.dot(sparse_query, sparse_doc))
+                hybrid_score = alpha * match["score"] + (1 - alpha) * sparse_score
+            else:
+                hybrid_score = match["score"]
+            match["hybrid_score"] = hybrid_score
+            scored_results.append(match)
+
+        top_matches = sorted(scored_results, key=lambda x: x["hybrid_score"], reverse=True)[:top_k]
 
         vectors = [
             {
@@ -78,9 +114,9 @@ class EnhancedResponseChain:
                 "page_range": match["metadata"].get("page_range", "Unknown"),
                 "publication_date": match["metadata"].get("publication_date", ""),
                 "document_type": match["metadata"].get("document_type", ""),
-                "vector_score": match["score"],
+                "vector_score": match["hybrid_score"]
             }
-            for match in results["matches"]
+            for match in top_matches
         ]
         return vectors
 

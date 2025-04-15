@@ -1,0 +1,16 @@
+pypdf
+langchain
+langchain-community
+nltk
+spacy
+python-dateutil
+sentence_transformers
+openai
+langchain_ollama
+langchain_openai
+langchain_community
+tqdm
+pinecone
+
+requests
+ollama

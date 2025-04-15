@@ -1,0 +1,33 @@
+Week 2 Check In (2/19/2025)
+
+1a. Weekly mentor meeting attendance (for missing members, provide reason):
+
+Everyone attended.
+
+1b. Was there a good discussion/Did you get your questions answered/requests responded to?
+
+Yes, we agreed on a few enhancements that we will add to the current system. Our first priority is creating a flow chart with all of the enhancements we are planning and implementing the most impactful one, reranking.
+
+1c. Any issues with the mentor communication?
+
+No
+
+2a. Team working meeting attendance (for missing members, provide reason):
+
+Everyone attended
+
+2b. Was there a discussion on the work?
+
+Yes, we discussed our research on RAG model architecture and techniques (embedding, ranking/reranking, retrieval, agentic approach). We also discussed what was accomplished last semester and how we can improve it (cleaning the documents, using smaller and larger models for different tasks to increase efficiency, experimenting with chunk-splitting size, etc).
+
+2c. Did you have a project management component? Did you make progress? Does everyone know what to do next?
+
+Yes, we are evaluating different enhancements and putting together a project plan with tentative deadlines for these tasks.
+
+2d. Any challenges or roadblocks?
+
+N/A
+
+3. Any questions/feedback?
+
+N/A

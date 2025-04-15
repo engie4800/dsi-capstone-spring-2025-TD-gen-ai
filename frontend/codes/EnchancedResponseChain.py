@@ -143,18 +143,25 @@ class EnhancedResponseChain:
                 return None
 
     def retrieve_candidates(self, query, top_k=100):
-        """Retrieve initial candidates from Pinecone based on semantic similarity to the query."""
+        """Retrieve initial candidates from Pinecone based on hybrid search (dense + sparse)."""
         query_embedding = self.embeddings.embed_query(query)
-        
-        # If hybrid search is enabled (alpha > 0), also get SPLADE sparse embedding
+
         if self.hybrid_alpha > 0:
-            sparse_embedding = self.get_splade_embedding(query)
-            
+            # Get SPLADE sparse vector
+            sparse = self.get_splade_embedding(query)
+
+            # Normalize SPLADE vector to match Pinecone format
+            sparse_vector = {
+                "indices": sparse["indices"],
+                "values": sparse["values"]
+            }
+
             results = self.index.query(
                 vector=query_embedding,
-                sparse_vector=sparse_embedding,
+                sparse_vector=sparse_vector,
                 top_k=top_k,
-                include_metadata=True
+                include_metadata=True,
+                alpha=self.hybrid_alpha  # weight for sparse component
             )
         else:
             results = self.index.query(

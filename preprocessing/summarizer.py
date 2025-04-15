@@ -7,7 +7,7 @@ from langchain_openai import ChatOpenAI
 from langchain_openai import AzureChatOpenAI
 
 
-def summarizer(input_file, backend="ollama", modelname="default"):
+def summarizer(input_file, backend="ollama", modelname="default", hybrid_alpha=0.0):
     """
     Determines which backend model to use for summarizing the input file and calls the corresponding function.
 
@@ -15,6 +15,9 @@ def summarizer(input_file, backend="ollama", modelname="default"):
         input_file (str): Path to the input JSON file containing chunked text.
         backend (str, optional): Specifies which backend model to use.
                                  Options: 'ollama' (default), 'openai', or 'azure'.
+        modelname (str, optional): Name of the model to use. Default is 'default'.
+        hybrid_alpha (float, optional): Alpha value for hybrid search (0.0 = only dense, 1.0 = only sparse).
+                                      Default is 0.0.
 
     Raises:
         ValueError: If an unknown backend is specified.
@@ -22,16 +25,18 @@ def summarizer(input_file, backend="ollama", modelname="default"):
     if backend in ["openai", "azure"]:
         return summarize_text_with_backend(backend, input_file,
                                     model_name="gpt-4o" if modelname == "default"
-                                    else modelname)
+                                    else modelname,
+                                    hybrid_alpha=hybrid_alpha)
     elif backend in ["ollama"]:
         return summarize_text_with_backend(backend, input_file,
                                     model_name="mistral" if modelname == "default"
-                                    else modelname)
+                                    else modelname,
+                                    hybrid_alpha=hybrid_alpha)
     else:
         raise ValueError(f"Unknown backend: {backend}, must be 'ollama', 'azure', or 'openai'")
 
 
-def summarize_text_with_backend(backend, input_file, model_name="mistral", max_summary_tokens=1024, temp=0):
+def summarize_text_with_backend(backend, input_file, model_name="mistral", max_summary_tokens=1024, temp=0, hybrid_alpha=0.0):
     """
     Loads the appropriate API credentials and model configuration for the specified backend and
     calls the summarization function.
@@ -42,6 +47,8 @@ def summarize_text_with_backend(backend, input_file, model_name="mistral", max_s
         model_name (str, optional): The model to use for text summarization. Defaults to 'mistral'.
         max_summary_tokens (int, optional): Maximum number of tokens for the summary. Defaults to 1024.
         temp (int, optional): Temperature setting for the LLM (controls randomness in responses). Defaults to 0.
+        hybrid_alpha (float, optional): Alpha value for hybrid search (0.0 = only dense, 1.0 = only sparse).
+                                      Default is 0.0.
 
     Returns:
         dict: A JSON object containing metadata such as the number of chunks processed and output file name.
@@ -51,6 +58,7 @@ def summarize_text_with_backend(backend, input_file, model_name="mistral", max_s
     """
     try:
         print(f"Summarizing text from {input_file} using backend {backend} and model name {model_name}")
+        print(f"Using hybrid search with alpha={hybrid_alpha}")
 
         # Load the API key info
         secrets_filename = f"secrets-{backend}.json"
@@ -78,14 +86,14 @@ def summarize_text_with_backend(backend, input_file, model_name="mistral", max_s
                 openai_api_base=secrets["openai_api_endpoint"],
             )
 
-        return summarize_text_with_llm(input_file, llm)
+        return summarize_text_with_llm(input_file, llm, hybrid_alpha)
 
     except Exception as e:
         print(f"\nUnexpected error: {e}")
         return {"error": str(e)}
 
 
-def summarize_text_with_llm(input_file, llm):
+def summarize_text_with_llm(input_file, llm, hybrid_alpha=0.0):
     """
     Reads a JSON file containing chunked text, generates summaries using an LLM,
     and writes the summarized output to a new JSON file.
@@ -93,6 +101,7 @@ def summarize_text_with_llm(input_file, llm):
     Args:
         input_file (str): Path to the JSON file containing chunked text.
         llm (ChatOpenAI or AzureChatOpenAI): The initialized language model.
+        hybrid_alpha (float): Alpha value for hybrid search (0.0 = only dense, 1.0 = only sparse). Default is 0.0.
 
     Returns:
         dict: A JSON object containing the number of processed chunks and the output file name.
@@ -113,8 +122,17 @@ def summarize_text_with_llm(input_file, llm):
 
         # Generate summaries for each chunk
         for chunk in tqdm(chunks, desc="Processing chunks"):
+            # Preserve any existing sparse embeddings if present
+            sparse_embedding = chunk.get("sparse_embedding", None)
+            
             results = get_chunk_info(llm, chunk["chunk"])
             chunk["summary"] = results["summary"]
+            
+            # Restore sparse embedding if it existed and hybrid search is enabled
+            if sparse_embedding and hybrid_alpha > 0:
+                # Scale the sparse embedding values by alpha
+                sparse_embedding["values"] = [v * hybrid_alpha for v in sparse_embedding["values"]]
+                chunk["sparse_embedding"] = sparse_embedding
 
         # Generate output filename with "-summarized.json" suffix
         base_name = os.path.splitext(input_file)[0].replace("-chunked", "")
@@ -188,12 +206,14 @@ if __name__ == "__main__":
                         help="Specify the backend model to use (default: 'ollama').")
     parser.add_argument("--llm_model_name", type=str, default="default",
                         help="Specify the LLM model name (default: 'default').")
+    parser.add_argument("--hybrid_alpha", type=float, default=0.0,
+                        help="Alpha value for hybrid search (0.0 = only dense, 1.0 = only sparse). Default is 0.0.")
 
     args = parser.parse_args()
 
     # ✅ Call summarizer with parsed arguments
     start_time = time.time()
-    result = summarizer(args.input_file, backend=args.backend, modelname=args.llm_model_name)
+    result = summarizer(args.input_file, backend=args.backend, modelname=args.llm_model_name, hybrid_alpha=args.hybrid_alpha)
     end_time = time.time()
 
     # ✅ Display result with elapsed time

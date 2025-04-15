@@ -1,6 +1,8 @@
 import cohere
-
+import torch
+import numpy as np
 from datetime import datetime
+from transformers import AutoModelForMaskedLM, AutoTokenizer
 
 from langchain.schema.runnable import RunnableSequence
 from langchain_core.prompts import PromptTemplate
@@ -16,9 +18,24 @@ from .OllamaEmbeddings import OllamaEmbeddings
 # warnings.filterwarnings("ignore")
 
 class EnhancedResponseChain:
-    def __init__(self, secrets, backend, llm_model_name, embed_model_name, pine_index_name, use_cohere):
-
-        #print(f"EnhancedResponseChain: Chatting using backend {backend} with llm {llm_model_name}, embed {embed_model_name}, and Pinecone index {pine_index_name}...")
+    def __init__(self, secrets, backend, llm_model_name, embed_model_name, pine_index_name, use_cohere, hybrid_alpha=0.5):
+        """
+        Initialize the EnhancedResponseChain with hybrid search support.
+        
+        Args:
+            secrets: Dictionary containing API keys and secrets
+            backend: Backend to use ('ollama', 'azure', 'openai')
+            llm_model_name: Name of the LLM model to use
+            embed_model_name: Name of the embedding model to use
+            pine_index_name: Name of the Pinecone index
+            use_cohere: Whether to use Cohere for reranking
+            hybrid_alpha: Alpha value for hybrid search (0.0 = only dense, 1.0 = only sparse)
+        """
+        # Initialize SPLADE model if hybrid search is enabled
+        self.hybrid_alpha = hybrid_alpha
+        if hybrid_alpha > 0:
+            self.splade_model = AutoModelForMaskedLM.from_pretrained('naver/splade-cocondenser-ensembledistil')
+            self.splade_tokenizer = AutoTokenizer.from_pretrained('naver/splade-cocondenser-ensembledistil')
 
         # Initialize Pinecone client with your specific configuration
         pc = Pinecone(api_key=secrets["pinecone_api_key"])
@@ -91,6 +108,23 @@ class EnhancedResponseChain:
 
         self.llm_chain = PROMPT | llm
 
+    def get_splade_embedding(self, text, max_length=512):
+        """Generate SPLADE sparse embedding for text."""
+        tokens = self.splade_tokenizer(text, return_tensors="pt", max_length=max_length, truncation=True, padding=True)
+        with torch.no_grad():
+            output = self.splade_model(**tokens)
+        
+        logits = output.logits
+        values, _ = torch.max(torch.log(1 + torch.relu(logits)), dim=2)
+        values = values.squeeze(0)
+        indices = torch.nonzero(values > 0).squeeze(1)
+        values = values[indices]
+        
+        return {
+            "indices": indices.tolist(),
+            "values": values.tolist()
+        }
+
     def cosine_similarity(self, vec1, vec2):
         """Compute cosine similarity between two vectors."""
         dot_product = sum(x * y for x, y in zip(vec1, vec2))
@@ -111,7 +145,23 @@ class EnhancedResponseChain:
     def retrieve_candidates(self, query, top_k=100):
         """Retrieve initial candidates from Pinecone based on semantic similarity to the query."""
         query_embedding = self.embeddings.embed_query(query)
-        results = self.index.query(vector=query_embedding, top_k=top_k, include_metadata=True)
+        
+        # If hybrid search is enabled (alpha > 0), also get SPLADE sparse embedding
+        if self.hybrid_alpha > 0:
+            sparse_embedding = self.get_splade_embedding(query)
+            
+            results = self.index.query(
+                vector=query_embedding,
+                sparse_vector=sparse_embedding,
+                top_k=top_k,
+                include_metadata=True
+            )
+        else:
+            results = self.index.query(
+                vector=query_embedding,
+                top_k=top_k,
+                include_metadata=True
+            )
 
         vectors = [
             {

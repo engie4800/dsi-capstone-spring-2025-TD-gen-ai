@@ -53,7 +53,8 @@ def pineconer(
     embedding_model_name="default",
     pinecone_index_name="td-bank-docs-new",
     pinecone_index_dimension=768,
-    batch_size=100
+    batch_size=100,
+    hybrid_alpha=0.5
 ):
     """Reads a summarized JSON file, generates embeddings, and stores them in Pinecone."""
     try:
@@ -89,7 +90,7 @@ def pineconer(
             embedding_model = embedding_model_name  # Ollama uses the model name directly
 
         print(f"Embedding summarized JSON file: {summarized_json_filename} using {backend} model {embedding_model_name} to index {pinecone_index_name} with dimension {index_dimension} ")
-
+        print(f"Using hybrid search with alpha={hybrid_alpha}")
 
         # this is pinecone's max
         pinecone_max_metadata_size = 40960
@@ -126,6 +127,7 @@ def pineconer(
             page_range = chunk.get("page_range", [])
             chunk_text = chunk.get("chunk", "")
             summary = chunk.get("summary", "")
+            sparse_embedding = chunk.get("sparse_embedding", None)
 
             embedding_vector = generate_embedding(chunk_text, embedding_model, embedding_model_name)
 
@@ -161,7 +163,18 @@ def pineconer(
             # Merge additional document properties if available
             metadata.update(doc_properties)
 
-            processed_chunks.append((record_id, embedding_vector, metadata))
+            # Create vector record with both dense and sparse embeddings
+            vector_record = {
+                'id': record_id,
+                'values': embedding_vector,
+                'metadata': metadata
+            }
+
+            # Add sparse embedding if enabled
+            if sparse_embedding and hybrid_alpha > 0:
+                vector_record['sparse_values'] = sparse_embedding
+
+            processed_chunks.append(vector_record)
 
         # Batch upload embeddings to Pinecone
         for batch_chunk in tqdm(batch(processed_chunks, batch_size), desc="Uploading batches to Pinecone"):
@@ -196,6 +209,7 @@ if __name__ == "__main__":
     parser.add_argument("--pinecone_index_name", type=str, default="td-bank-docs-new", help="Name of the Pinecone index.")
     parser.add_argument("--backend", type=str, default="ollama", choices=["openai", "ollama", "azure"], help="Embedding backend: 'openai', 'ollama', or 'azure'.")
     parser.add_argument("--batch_size", type=int, default=100, help="Number of records to process per batch.")
+    parser.add_argument("--hybrid_alpha", type=float, default=0.0, help="Alpha value for hybrid search (0.0 = only dense, 1.0 = only sparse). Default is 0.0.")
 
     args = parser.parse_args()
 
@@ -207,7 +221,8 @@ if __name__ == "__main__":
         backend=args.backend,
         embedding_model_name=args.embedding_model_name,
         pinecone_index_name=args.pinecone_index_name,
-        batch_size=args.batch_size
+        batch_size=args.batch_size,
+        hybrid_alpha=args.hybrid_alpha
     )
 
     print(json.dumps(result, indent=4))

@@ -23,3 +23,4 @@ frontend/secrets_ollama.json
 frontend/secrets_azure.json
 frontend/openaikeys.txt
 frontend/codes/__init__.py
+Fall2024/secrets.json

@@ -8,7 +8,7 @@ from transformers import AutoModelForMaskedLM, AutoTokenizer
 import torch
 import numpy as np
 
-def get_splade_embeddings(text, model, tokenizer, max_length=512, alpha=0.5):
+def get_splade_embeddings(text, model, tokenizer, max_length=512):
     """Generate SPLADE sparse embeddings for text."""
     tokens = tokenizer(text, return_tensors="pt", max_length=max_length, truncation=True, padding=True)
     with torch.no_grad():
@@ -24,9 +24,6 @@ def get_splade_embeddings(text, model, tokenizer, max_length=512, alpha=0.5):
     values = values.squeeze(0)
     indices = torch.nonzero(values > 0).squeeze(1)
     values = values[indices]
-    
-    # Scale values by alpha
-    values = values * alpha
     
     return {
         "indices": indices.tolist(),
@@ -99,7 +96,7 @@ def chunker(json_file, chunk_size=1, similarity_threshold=0.7, hybrid_alpha=0.0)
             # Generate SPLADE sparse embedding if hybrid search is enabled
             sparse_embedding = None
             if hybrid_alpha > 0:
-                sparse_embedding = get_splade_embeddings(chunk, splade_model, splade_tokenizer, alpha=hybrid_alpha)
+                sparse_embedding = get_splade_embeddings(chunk, splade_model, splade_tokenizer)
 
             # If this is the first chunk, add it without checking similarity
             if i == 0:
@@ -120,7 +117,7 @@ def chunker(json_file, chunk_size=1, similarity_threshold=0.7, hybrid_alpha=0.0)
                 # Recompute embedding for merged chunk
                 final_embeddings[-1] = model.encode(final_chunks[-1], convert_to_tensor=True) * dense_scale
                 if hybrid_alpha > 0:
-                    final_sparse_embeddings[-1] = get_splade_embeddings(final_chunks[-1], splade_model, splade_tokenizer, alpha=hybrid_alpha)
+                    final_sparse_embeddings[-1] = get_splade_embeddings(final_chunks[-1], splade_model, splade_tokenizer)
             else:
                 # Add as a new chunk
                 final_chunks.append(chunk)

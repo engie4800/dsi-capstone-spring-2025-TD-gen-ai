@@ -130,8 +130,6 @@ def summarize_text_with_llm(input_file, llm, hybrid_alpha=0.0):
             
             # Restore sparse embedding if it existed and hybrid search is enabled
             if sparse_embedding and hybrid_alpha > 0:
-                # Scale the sparse embedding values by alpha
-                sparse_embedding["values"] = [v * hybrid_alpha for v in sparse_embedding["values"]]
                 chunk["sparse_embedding"] = sparse_embedding
 
         # Generate output filename with "-summarized.json" suffix

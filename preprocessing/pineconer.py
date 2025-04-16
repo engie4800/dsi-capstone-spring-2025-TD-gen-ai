@@ -12,6 +12,33 @@ from itertools import islice
 from pinecone import ServerlessSpec
 from classifier import classifier
 
+from transformers import AutoTokenizer, AutoModel
+import torch
+from sklearn.preprocessing import normalize
+import numpy as np
+
+
+def get_splade_embedding(splade_tokenizer,splade_model, text: str) -> np.ndarray:
+    """Generate sparse embedding using SPLADE model"""
+    # Tokenize and prepare input
+    inputs = splade_tokenizer(text, return_tensors="pt", padding=True, truncation=True, max_length=512)
+    if torch.cuda.is_available():
+        inputs = {k: v.to('cuda') for k, v in inputs.items()}
+
+    # Get model output
+    with torch.no_grad():
+        output = splade_model(**inputs)
+
+    # Get attention weights and convert to sparse embedding
+    attention = output.last_hidden_state.mean(dim=1)  # Average attention across sequence
+    sparse_embedding = attention.squeeze().cpu().numpy()
+
+    # Normalize the embedding
+    sparse_embedding = normalize(sparse_embedding.reshape(1, -1))[0]
+
+    return sparse_embedding
+
+
 def generate_embedding(text, embedding_model, embedding_model_name):
     """Generates an embedding for the given text using a pre-instantiated embedding model."""
     try:
@@ -105,7 +132,8 @@ def pineconer(
             pc.create_index(
                 name=pinecone_index_name,
                 dimension=index_dimension,
-                metric="cosine",
+                #metric="cosine",
+                metric="dotproduct",
                 spec=ServerlessSpec(cloud="aws", region="us-east-1")
             )
 
@@ -122,6 +150,14 @@ def pineconer(
         records_processed = 0
         processed_chunks = []
 
+
+        # Initialize SPLADE
+        splade_tokenizer = AutoTokenizer.from_pretrained("naver/splade-cocondenser-ensembledistil")
+        splade_model = AutoModel.from_pretrained("naver/splade-cocondenser-ensembledistil")
+        if torch.cuda.is_available():
+            splade_model = splade_model.to('cuda')
+
+
         for chunk in tqdm(chunks, desc="Processing chunks"):
             page_range = chunk.get("page_range", [])
             chunk_text = chunk.get("chunk", "")
@@ -129,9 +165,18 @@ def pineconer(
 
             embedding_vector = generate_embedding(chunk_text, embedding_model, embedding_model_name)
 
+            sparse_embedding = get_splade_embedding(splade_tokenizer,splade_model,chunk_text)
+
+
             if embedding_vector is None:
                 print(f"Skipping chunk {page_range} due to embedding error.")
                 continue
+
+            # Convert sparse embedding to sparse_values format
+            sparse_array = np.array(sparse_embedding)
+            indices = np.nonzero(sparse_array)[0].tolist()
+            values = sparse_array[indices].tolist()
+
 
             record_id = f"content_{str(uuid.uuid4())}"
 
@@ -141,7 +186,7 @@ def pineconer(
                 "page_range": page_range,
                 "content": chunk_text[:40000],
                 "summary": summary,
-                "date_range": f"{from_date}:{to_date}",
+                "date_range": f"{from_date}:{to_date}"
             }
 
             json_string = json.dumps(metadata)
@@ -161,8 +206,16 @@ def pineconer(
             # Merge additional document properties if available
             metadata.update(doc_properties)
 
-            processed_chunks.append((record_id, embedding_vector, metadata))
-
+            # Prepare hybrid (dense + sparse) entry for upsert
+            processed_chunks.append({
+                "id": record_id,
+                "values": embedding_vector,
+                "sparse_values": {
+                    "indices": indices,
+                    "values": values
+                },
+                "metadata": metadata
+            })
         # Batch upload embeddings to Pinecone
         for batch_chunk in tqdm(batch(processed_chunks, batch_size), desc="Uploading batches to Pinecone"):
             index.upsert(batch_chunk)

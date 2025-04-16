@@ -12,9 +12,15 @@ from langchain_community.document_loaders import PyPDFLoader
 
 # Ensure you have the necessary NLTK data files
 nltk.download('punkt')
+nltk.download('punkt_tab')
+# print(nltk.data.find('tokenizers/punkt'))
+# from nltk.tokenize import sent_tokenize
+#
+# text = "This is a test. Here's another sentence."
+# print(sent_tokenize(text))
 
 
-def texter(pdf_path, out_filename=None):
+def texter(pdf_path, out_filename=None, text_only=False):
     """
     Converts a PDF file to text and saves it to an output file. Also extracts PDF properties
     and saves them to a JSON file.
@@ -30,11 +36,16 @@ def texter(pdf_path, out_filename=None):
     """
     try:
         # Save text to output file
+        base_name = os.path.splitext(pdf_path)[0]
         if out_filename is None:
-            base_name = os.path.splitext(pdf_path)[0]
-            out_filename = f"{base_name}.json"
+            if text_only:
+                out_filename = f"{base_name}.txt"
+            else:
+                out_filename = f"{base_name}.json"
 
-        print(f"Converting PDF file {pdf_path} to json file {out_filename}...")
+
+
+        print(f"Converting PDF file {pdf_path} to file {out_filename}...")
 
         loader = PyPDFLoader(pdf_path)
         documents = loader.load()
@@ -42,13 +53,30 @@ def texter(pdf_path, out_filename=None):
         #text = "\n".join(doc.page_content for doc in documents)
         # Extract pages as JSON objects
         #pages_json = [{"page_number": i + 1, "page_content": clean_string(doc.page_content)} for i, doc in enumerate(documents)]
-        pages_json = []
-        for i, doc in enumerate(tqdm.tqdm(documents, desc="Processing documents")):
-            page = {
-                "page_number": i + 1,
-                "page_content": clean_string(doc.page_content)
-            }
-            pages_json.append(page)
+        num_pages = 0
+        if text_only:
+            text = "\n".join(clean_string(doc.page_content) for doc in documents)
+            #print(text)
+            num_pages = len(documents)
+            with open(out_filename, 'w', encoding='utf-8') as output_file:
+                output_file.write(text)
+        else:
+            pages_json = []
+            for i, doc in enumerate(tqdm.tqdm(documents, desc="Processing documents")):
+                page = {
+                    "page_number": i + 1,
+                    "page_content": clean_string(doc.page_content)
+                }
+                pages_json.append(page)
+            num_pages = len(pages_json)
+            #with open(out_filename, 'w', encoding='utf-8') as output_file:
+            #    output_file.write(text)
+
+            # Save page content to JSON file
+            with open(out_filename, 'w', encoding='utf-8') as output_file:
+                json.dump(pages_json, output_file, indent=4, ensure_ascii=False)
+
+        # Save PDF properties to JSON file
 
         # Extract PDF properties from the first document's metadata
         if documents:
@@ -60,20 +88,11 @@ def texter(pdf_path, out_filename=None):
         serializable_properties = {key: str(value) for key, value in pdf_properties.items()}
 
 
-
-        #with open(out_filename, 'w', encoding='utf-8') as output_file:
-        #    output_file.write(text)
-
-        # Save page content to JSON file
-        with open(out_filename, 'w', encoding='utf-8') as output_file:
-            json.dump(pages_json, output_file, indent=4, ensure_ascii=False)
-
-        # Save PDF properties to JSON file
         prop_filename = f"{base_name}-prop.json"
         with open(prop_filename, 'w', encoding='utf-8') as prop_file:
             json.dump(serializable_properties, prop_file, indent=4)
 
-        return out_filename,prop_filename,len(pages_json)
+        return out_filename,prop_filename,num_pages
 
     except FileNotFoundError:
         return {"error": f"File '{pdf_path}' not found."}
@@ -101,7 +120,7 @@ def clean_string(text):
         Exception: Catches any unexpected errors and returns an error message.
 
     Example:
-        >>> raw_text = "INTRODUCTION\nSPEAKER: Hello, everyone. \nThis is a sample text.\n\n\nNEXT HEADER\n JOHN: How are you?"
+        >>> raw_text = INTRODUCTION\nSPEAKER: Hello, everyone. \nThis is a sample text.\n\n\nNEXT HEADER\n JOHN: How are you?
         >>> clean_string(raw_text)
         "Hello, everyone. This is a sample text. How are you?"
     """
@@ -128,14 +147,19 @@ def clean_string(text):
 
 
 def main():
-    if len(sys.argv) < 2 or len(sys.argv) > 3:
+
+    if len(sys.argv) < 2 or len(sys.argv) > 4:
         print("Usage: python texter.py <pdf_path> [output_path]")
         sys.exit(1)
 
+    text_only = False
     pdf_path = sys.argv[1]
-    output_path = sys.argv[2] if len(sys.argv) > 3 else None
+    output_path = sys.argv[2] if len(sys.argv) >= 3 else None
+    text_only_str = sys.argv[3] if len(sys.argv) >=4  else None
+    if text_only_str == "text_only":
+        text_only = True
     start_time = time.time()
-    result = texter(pdf_path, output_path)
+    result = texter(pdf_path, output_path,text_only)
     end_time = time.time()
     # Calculate the elapsed time
     elapsed_time = end_time - start_time

@@ -1,0 +1,12 @@
+{
+  "answerable": [
+    "What is the name of the bank discussed in this text?",
+    "How many PPP loans did the bank fund during the year ended October 31, 2021?",
+    "What percentage of the PPP loans funded by the bank during the year ended October 31, 2021 were forgiven during the same period?"
+  ],
+  "unanswerable": [
+    "What is the total number of private label and co-branded cards issued by TD Bank in Canada?",
+    "How many PPP loans were forgiven in 2021 that were not originated during the same year?",
+    "What was the total number of branches that were closed in the second quarter of 2020?"
+  ]
+}

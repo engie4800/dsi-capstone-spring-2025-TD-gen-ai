@@ -1,9 +1,25 @@
-import streamlit as st
+
 from codes.EnhancedAgent import EnhancedAgent
 import os
 import json
-import argparse
 
+
+# code block required because: it disables Streamlit's "hot reload" module path inspection
+# for anything under the torch package — which avoids triggering the faulty dynamic inspection logic.
+###### BEGIN: PATCHES for streamlit-torch incompatibilities
+os.environ["STREAMLIT_WATCHER_IGNORE"] = "torch transformers"
+import streamlit as st
+import torch
+
+# Prevent access to __path__ from triggering instantiation
+# this is really the one that resolved the issue
+if hasattr(torch, "classes"):
+    class SafePath:
+        def __getattr__(self, item):
+            return []
+
+    torch.classes.__path__ = SafePath()
+###### END: PATCHES for streamlit-torch incompatibilities
 
 def write_no_latex(*args, **kwargs):
     """Custom st.write() that disables LaTeX rendering."""
@@ -17,7 +33,15 @@ def write_no_latex(*args, **kwargs):
     st.markdown(text,unsafe_allow_html=True)   
 
 
-def chatter(backend="ollama", llm_model_name="default", embed_model_name="default", pine_index_name="td-bank-docs-new", use_cohere=True):
+def chatter(trace_on=True,
+            backend="ollama",
+            llm_model_name="default",
+            embed_model_name="default",
+            pine_index_name="td-bank-docs-new",
+            use_cohere=True,
+            hybrid_alpha=0,
+            confidence_threshold=0
+            ):
     """
     Function to run the chatbot application.
     
@@ -43,8 +67,8 @@ def chatter(backend="ollama", llm_model_name="default", embed_model_name="defaul
         raise ValueError(f"Unknown backend: [{backend}], must be 'ollama', 'azure', or 'openai'")
 
 
-
-    print(f"Chatting using backend {backend} with llm {llm_model_name}, embed {embed_model_name}, and Pinecone index {pine_index_name}, use_cohere {use_cohere} ...")
+    if (trace_on):
+        print(f"Tracing is on: Chatting using backend {backend} with llm {llm_model_name}, embed {embed_model_name}, Pinecone index {pine_index_name}, use_cohere {use_cohere}, confidence_threshold {confidence_threshold}, hybrid_alpha {hybrid_alpha}")
 
     # Load secrets info from appropriate backend secrets file
     secrets_filename = f"secrets_{backend}.json"
@@ -63,7 +87,15 @@ def chatter(backend="ollama", llm_model_name="default", embed_model_name="defaul
     st.write = write_no_latex
 
     # Initialize agent with secrets
-    agent = EnhancedAgent(secrets, backend=backend, llm_model_name=llm_model_name, embed_model_name=embed_model_name, pine_index_name=pine_index_name,use_cohere=use_cohere)
+    agent = EnhancedAgent(secrets,
+                          trace_on=trace_on,
+                          backend=backend,
+                          llm_model_name=llm_model_name,
+                          embed_model_name=embed_model_name,
+                          pine_index_name=pine_index_name,
+                          use_cohere=use_cohere,
+                          hybrid_alpha=hybrid_alpha,
+                          confidence_threshold=confidence_threshold)
 
     # Chatbot Application
     if "messages" not in st.session_state:
@@ -71,12 +103,7 @@ def chatter(backend="ollama", llm_model_name="default", embed_model_name="defaul
 
     st.title("TD Bank Performance Chat Assistant")
 
-    # Sidebar with reset button
-    with st.sidebar:
-        st.title("Chat Options")
-        if st.button("Start New Chat"):
-            st.session_state.messages = []
-            st.rerun()
+
 
     # Main chat container
     chat_container = st.container()
@@ -108,7 +135,7 @@ def chatter(backend="ollama", llm_model_name="default", embed_model_name="defaul
                     f"Q: {msg['content']}" if msg['role'] == 'user' else f"A: {msg['content']}"
                     for msg in st.session_state.messages
                 )
-                answer, documents = agent.invoke(user_question, conversation_history)
+                answer, documents,confidence_score, reason = agent.invoke(user_question, conversation_history)
 
                 # Add assistant response to chat history
                 st.session_state.messages.append({
@@ -135,9 +162,54 @@ def main():
     llm_model_name = os.getenv("llm_model_name", "default")
     embed_model_name = os.getenv("embed_model_name", "default")
     pine_index_name = os.getenv("pine_index_name", "td-bank-docs-new")
-    use_cohere = eval(os.getenv("use_cohere", "True"))
+    #use_cohere = eval(os.getenv("use_cohere", "True"))
 
-    chatter(backend, llm_model_name, embed_model_name, pine_index_name, use_cohere)
+
+    # Sidebar with reset button
+    with st.sidebar:
+        st.title("Chat Options")
+
+        # Checkbox to toggle Cohere reranking
+        trace_exec = st.checkbox("Trace On", value=False)
+
+        # Checkbox to toggle Cohere reranking
+        use_cohere = st.checkbox("Use Cohere Reranker", value=False)
+
+        use_confidence_threshold = st.checkbox("Use Confidence Threshold", value=False)
+        confidence_threshold = st.number_input(
+            "Confidence Threshold (0.0 to 1.0)",
+            min_value=0.0,
+            max_value=1.0,
+            value=0.5,
+            step=0.05,
+            disabled=not use_confidence_threshold
+        )
+        # Force confidence_threshold to 0.0 if hybrid search is off
+        if not use_confidence_threshold:
+            confidence_threshold = 0.0
+        confidence_threshold = round(confidence_threshold, 2)
+
+        use_hybrid = st.checkbox("Use Hybrid Search", value=False)
+        hybrid_alpha = st.number_input(
+            "Hybrid Alpha (0.0 to 1.0)",
+            min_value=0.0,
+            max_value=1.0,
+            value=0.5,
+            step=0.05,
+            disabled=not use_hybrid
+        )
+        # Force hybrid_alpha to 0.0 if hybrid search is off
+        if not use_hybrid:
+            hybrid_alpha = 0.0
+        hybrid_alpha = round(hybrid_alpha, 2)
+
+        if st.button("Start New Chat"):
+            st.session_state.messages = []
+            st.rerun()
+
+    chatter(trace_exec, backend, llm_model_name, embed_model_name, pine_index_name,
+            use_cohere, hybrid_alpha, confidence_threshold
+            )
 
 
 # Entry point

@@ -1,0 +1,81 @@
+Question,Confidence Score,Correct
+What was named Canada's Best Investment Bank in the year 2021?,1.0,1
+Which award did TD Bank Group receive for their global expansion of U.S. dollar strategy?,1.0,1
+Who served as one of two Structuring Advisors for the Government of Canada's inaugural issuance of green bonds?,0.6,0
+What was the rank of TD Bank Group in the 2020 Global Custodian Magazine Survey for Cap Intro and Client Services?,1,1
+Which sector did TD Bank Group invest senior leaders in regarding their U.S. dollar strategy?,1.0,1
+Who acted as one of 5 joint lead managers on the European Union’s EUR 12 billion inaugural green bond?,1,1
+What was the total face value of sustainability-linked loans that TD Bank participated in during a specific period?,1.0,1
+Which company did TD Bank Group act as financial advisor to for their $26 billion acquisition by another company?,1,1
+Who was the financial advisor to Cenovus Energy on their $23.6 billion merger with Husky Energy?,1,1
+What was the rank of TD Bank in Canadian M&A announced and completed in a specific year?,1.0,1
+What is the initial expiration date of the Schwab IDA Agreement?,1.0,1
+What is the servicing fee under the Schwab IDA Agreement per annum on the aggregate average daily balance in the sweep accounts?,1.0,1
+"What was the amount paid by the Bank to Schwab related to sweep deposit accounts for the period from October 6, 2020 to October 31, 2020?",1,1
+What is the maximum reduction of deposits under the Schwab IDA Agreement that Schwab can opt for in a year?,1.0,1
+"What was the average insured deposit balance for the year ended October 31, 2021 under the Schwab IDA Agreement?",0.2,0
+"What was the amount paid by the Bank to TD Ameritrade related to sweep deposit accounts during the year ended October 31, 2020 prior to completion of the Schwab transaction?",0.6,0
+"What is the total commitment provided by the Bank to Symcor in unsecured revolving loan facilities as at October 31, 2021?",1.0,1
+"What was the amount receivable from Schwab as at October 31, 2021?",0.8,1
+"What was the amount payable to Schwab as at October 31, 2020?",1.0,1
+What is the one-third ownership of the Bank in Symcor?,0.3,0
+What is TD Bank's approach to managing operational risk?,1.0,1
+How does TD Bank monitor its risk profile throughout the organization?,1.0,1
+What role does insurance play in TD Bank's risk management strategy?,1.0,1
+What is the purpose of TD Bank's Cybersecurity Subcommittee?,1.0,1
+What are some examples of data governance and management practices at TD Bank?,1.0,1
+How does TD Bank ensure business continuity in case of a disruption incident?,1,1
+What is an 'enterprise third-party risk management program' as described for TD Bank?,1.0,1
+What is the objective of TD Bank's Business Continuity and Crisis Management Program?,1.0,1
+How does TD Bank manage risks related to its use of technology and information systems?,1.0,1
+What are some key aspects of TD Bank's data assets management strategy?,0.8,1
+What is the net interest income for TD Bank Group in 2021?,1.0,1
+What was the net interest margin for TD Bank Group in 2019?,1,1
+What is the total assets value for TD Bank Group in 2021?,1.0,1
+What is the average trading loans amount for TD Bank Group in 2020 and 2019 respectively?,1.0,1
+What is the geographic classification of assets and liabilities based on in this text?,1.0,1
+What is included in the 'Interest income' as per the text?,0.95,1
+What are the average trading deposits with a fair value for TD Bank Group in 2020 and 2019 respectively?,1.0,1
+What is the total interest-bearing liabilities for TD Bank Group in 2021?,1.0,1
+What is the difference between 'GAAP' and 'non-GAAP' financial measures as per this text?,1.0,1
+What charges are included in 'Includes charges incurred on the Schwab IDA Agreement'?,1.0,1
+What method does the bank use to estimate fair value for share option compensation awards?,0.6,0
+How long is the vesting period for the bank's share options?,1.0,1
+What happens to non-current assets or disposal groups classified as held-for-sale in terms of depreciation and amortization?,1,1
+What is the treatment of write-downs on premises related non-current assets and write-downs on equipment when initially classified as held-for-sale?,1.0,1
+How are non-current assets or disposal groups that are held-for-sale measured on the Consolidated Balance Sheet?,1,1
+What is the accounting treatment for a sale to be highly probable according to the bank's criteria?,0.95,1
+What is the period over which the cost of the share options is recognized as compensation expense and contributed surplus?,0.8,1
+How are impairment losses on depreciable assets assessed if they do not generate separate cash flows on a stand-alone basis?,1.0,1
+What is the accounting treatment for subsequent write-downs in fair value less costs to sell or such increases not in excess of cumulative write-downs for non-current assets or disposal groups held-for-sale?,1.0,1
+How are depreciable assets assessed for changes in useful life or impairment on a quarterly basis?,0.6,0
+What type of assets does the bank securitize through structured entities?,1.0,1
+What are the benefits of securitizations for the bank?,1,1
+What is the role of liquidity facilities in conduits that issue ABCP?,1,1
+How does the bank earn fees from its sponsored securitization conduits?,0.95,1
+In what ways can the bank provide credit enhancements to securitization conduits?,1,1
+What is the difference between single-seller and multi-seller conduits?,1,1
+What is the purpose of transaction-specific first loss protection in multi-seller conduits?,1.0,1
+Under what circumstances does the bank consolidate a multi-seller conduit?,1.0,1
+What kind of entities does the bank create as part of its asset management business?,0.95,1
+How does the bank obtain financing for its investment funds and trusts?,1.0,1
+What is the name of the class action lawsuit against the bank?,0.2,0
+Who was named as a defendant in the Stanford Litigation?,1.0,1
+In what district court was the Stanford Litigation filed?,1.0,1
+What is the alleged nature of the fraud committed by R. Allen Stanford according to the plaintiffs?,1.0,1
+"What services did the bank provide to Stanford International Bank, Limited (SIBL)?",1,1
+When was the class certification motion fully submitted in the Stanford Litigation?,1.0,1
+What was the outcome of the class certification motion in the Stanford Litigation?,1.0,1
+"What is the status of the OSIC's motion for leave to amend its intervenor complaints against the bank as of October 15, 2019?",1.0,1
+When did the Northern District of Texas court grant OSIC’s motion for leave to amend its intervenor complaints against the bank and other defendants?,1,1
+"What is the current status of the aiding and abetting fraud, aiding and abetting conversion, and aiding and abetting breach of fiduciary duty claims in OSIC's case against the bank?",1,1
+What is the name of the bank mentioned in the text?,1.0,1
+Who can shareholders communicate directly with through the Chair of the Board?,0.95,1
+What is the record date for notice and voting mentioned in the text?,1.0,1
+What is the contact number for TD Canada Trust in Canada?,1.0,1
+"What is the contact number for TD Bank, America's Most Convenient Bank® in the U.S.?",0.2,0
+What is the trustee for subordinated notes mentioned in the text?,1.0,1
+What is the email address for shareholders to communicate with the independent directors via the Chair of the Board?,1.0,1
+What is the French equivalent of The Toronto-Dominion Bank's annual report location?,0.95,1
+"What is the contact number for TD Bank, America's Most Convenient Bank® for hearing impaired customers in the U.S.?",0.6,0
+What is the email address for general shareholder inquiries?,1.0,1

@@ -1,17 +1,21 @@
-from deepeval.metrics import GEval
 from deepeval.test_case import LLMTestCase, LLMTestCaseParams
 from deepeval.models import DeepEvalBaseLLM
+
+from .GEvalStrict import GEvalStrict
+
 
 class ConfidenceChecker:
     def __init__(self, llm: DeepEvalBaseLLM, threshold: float = 0.5):
         self.threshold = threshold
-        ge = GEval(
+        #ge = GEval(
+        ge = GEvalStrict(
             name="CorrectnessNoExpectedOutput",
             criteria="Assess whether the actual output is consistent with or does not contradict the input.",
             evaluation_steps=[
                 "Check whether 'actual output' clearly contradicts the 'input'",
                 "If the input implies certain factual info, see if the 'actual output' is consistent with that",
-                "Minor omissions or ambiguities might lower the score slightly"
+                "Minor omissions or ambiguities might lower the score slightly",
+                "Return a score between 0 and 1, where 1 indicates perfect confidence and 0 indicates no confidence"
             ],
             evaluation_params=[LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
             model=llm
@@ -27,6 +31,7 @@ class ConfidenceChecker:
         )
         try:
             result = self.correctness_metric.evaluate(test_case)
+            #print(f"Result={result}")
         except Exception as e:
             import traceback
             traceback.print_exc()

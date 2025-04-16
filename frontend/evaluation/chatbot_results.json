@@ -1,0 +1,44 @@
+[
+    {
+        "Question": "What is the name of the bank discussed in this text?",
+        "Generated Answer": " The bank discussed in this text is TD Bank Group. In Q1 2023, TD reported strong financial results with net income growing by 5% compared to the same period last year, reaching $3.4 billion. Diluted earnings per share were $1.67, up from $1.61 in Q1 2022. Total revenue was $11.8 billion, a 5% increase compared to Q1 2022. The bank's outlook remains positive, with continued growth expected in its key business segments due to digital transformation, strategic investments, and a focus on customer experience. However, the report also highlights various risk factors that could impact TD's performance, such as geopolitical risks, regulatory changes, technological disruptions, and environmental and social issues.",
+        "Confidence Score": 1,
+        "Reason": "The actual output clearly discusses TD Bank Group and its financial performance, which directly answers the input question.",
+        "Correct": true
+    },
+    {
+        "Question": "How many PPP loans did the bank fund during the year ended October 31, 2021?",
+        "Generated Answer": " Based on the information provided in the documents, there is no mention of Paycheck Protection Program (PPP) loans funded by the bank during the year ended October 31, 2021. The documents focus primarily on various aspects of the bank's financial performance, including its loan portfolio, allowance for credit losses, and other financial metrics, but there is no specific mention or section dedicated to PPP loans. Therefore, it is not possible to determine the number of PPP loans funded by the bank during that period from the provided information.",
+        "Confidence Score": 1,
+        "Reason": "The actual output clearly contradicts the input and is consistent with the information provided in the documents.",
+        "Correct": true
+    },
+    {
+        "Question": "What percentage of the PPP loans funded by the bank during the year ended October 31, 2021 were forgiven during the same period?",
+        "Generated Answer": "I'm not confident enough in my answer. Please check the sources or ask a different question.",
+        "Confidence Score": 0.2,
+        "Reason": "The actual output does not provide a clear answer to the question and requires additional information or resources to calculate the percentage of PPP loans forgiven during the specified period.",
+        "Correct": false
+    },
+    {
+        "Question": "What is the total number of private label and co-branded cards issued by TD Bank in Canada?",
+        "Generated Answer": " To find the total number of private label and co-branded cards issued by TD Bank in Canada, I would need to review the bank's annual reports or investor presentations. However, these documents do not typically provide a breakdown of the number of private label and co-branded cards separately.\n\nIn the 2023 Annual Report (Page 75), it is mentioned that TD Bank Group engages in securitization of various assets, including credit card loans. As of October 31, 2023, the bank had $1.5 billion of securitized credit card receivables outstanding. Since this figure represents only securitized credit card receivables and not the total number of cards, it is not possible to determine the exact number of private label and co-branded cards issued in Canada based on this information alone.\n\nIn the absence of specific figures, I would recommend reaching out to TD Bank's investor relations department or visiting their official website for more detailed information about their credit card portfolio.",
+        "Confidence Score": 1.0,
+        "Reason": "Although the actual output acknowledges the need for specific documents to find the required information, it does not clearly contradict the input or provide a definitive answer. The text also does not seem consistent with the factual implication that the total number of cards should be readily available.",
+        "Correct": true
+    },
+    {
+        "Question": "How many PPP loans were forgiven in 2021 that were not originated during the same year?",
+        "Generated Answer": " Based on the information provided, it is not possible to determine exactly how many Paycheck Protection Program (PPP) loans were forgiven in 2021 that were not originated during the same year. The text does not provide any data or figures related to the origination date of PPP loans or their subsequent forgiveness status.\n\nHowever, it is mentioned that the increase in gross impaired loans on Page 147 of the 2021 Annual Report was driven by government-guaranteed PPP loans in the U.S. Commercial segment and some early signs of credit normalization in the U.S. RESL segment. This suggests that there were likely PPP loans originated during a previous period (before 2021) that experienced impairment or credit difficulties, which may have led to their eventual forgiveness.\n\nTo get more specific information about the number of PPP loans forgiven and their origination dates, it would be necessary to consult additional sources or reports that provide such details. For example, the Small Business Administration (SBA), which administers the PPP program in the United States, might have data on the number of loans forgiven by year and their origination dates.",
+        "Confidence Score": 1.0,
+        "Reason": "Although the actual output provides some relevant information about PPP loans and their status, it does not directly answer the question about the number of PPP loans forgiven in 2021 that were not originated during the same year. The text also mentions data from additional sources that could provide more specific information.",
+        "Correct": true
+    },
+    {
+        "Question": "What was the total number of branches that were closed in the second quarter of 2020?",
+        "Generated Answer": " Based on the provided data, it is not possible to determine the exact number of branches that were closed in the second quarter of 2020. The table only provides the number of branches for each quarter from Q1 2020 to Q4 2022, and there is no information about branch closures or openings during this period. However, we can see that the total number of branches was 2,534 in Q2 2020, which is the same as the number in Q1 2020 (2,547). This suggests that no branches were closed between these two quarters, but without further information, it cannot be confirmed whether any branches were closed during other periods.",
+        "Confidence Score": 1.0,
+        "Reason": "The actual output does not clearly contradict the input and it is consistent with the information provided in the input. However, it does not provide the exact number of branches closed in Q2 2020 as requested.",
+        "Correct": true
+    }
+]

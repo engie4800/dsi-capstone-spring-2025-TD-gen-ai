@@ -1,0 +1,29 @@
+time <cr.txt
+call .\textify_file data\2021_annual_report
+call .\textify_file data\2022_annual_report
+call .\textify_file data\2022_q1_report
+call .\textify_file data\2022_q1_transcript
+call .\textify_file data\2022_q2_report
+call .\textify_file data\2022_q2_transcript
+call .\textify_file data\2022_q3_report
+call .\textify_file data\2022_q3_transcript
+call .\textify_file data\2022_q4_transcript
+call .\textify_file data\2023_annual_report
+call .\textify_file data\2023_q1_report
+call .\textify_file data\2023_q1_transcript
+call .\textify_file data\2023_q2_report
+call .\textify_file data\2023_q2_transcript
+call .\textify_file data\2023_q3_report
+call .\textify_file data\2023_q3_transcript
+call .\textify_file data\2023_q4_transcript
+call .\textify_file data\2024_annual_report
+call .\textify_file data\2024_q1_report
+call .\textify_file data\2024_q1_transcript
+call .\textify_file data\2024_q2_report
+call .\textify_file data\2024_q2_transcript
+call .\textify_file data\2024_q3_report
+call .\textify_file data\2024_q3_transcript
+call .\textify_file data\2024_q4_transcript
+call .\textify_file data\2025_q1_report
+call .\textify_file data\2025_q1_transcript
+time <cr.txt

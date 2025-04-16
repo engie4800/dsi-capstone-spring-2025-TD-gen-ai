@@ -1,0 +1,1 @@
+python .\texter.py %1.pdf %1.txt text_only

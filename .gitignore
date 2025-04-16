@@ -23,3 +23,17 @@ frontend/secrets_ollama.json
 frontend/secrets_azure.json
 frontend/openaikeys.txt
 frontend/codes/__init__.py
+*.iml
+/frontend/.idea
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/inspectionProfiles/Project_Default.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/prettier.xml
+.idea/vcs.xml
+preprocessing/delete_pinecone_index.py
+preprocessing/.idea/inspectionProfiles/Project_Default.xml
+frontend/secrets_ollama-sam.json
+preprocessing/delete_pinecone_index.py
+preprocessing/delete_pinecone_index.py
+preprocessing/delete_pinecone_index.py

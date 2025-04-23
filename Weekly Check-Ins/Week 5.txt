@@ -1,0 +1,34 @@
+Week 5 Check In (3/25/25) - Feedback for Midterm Report and Presentation
+Feedback
+The presentation and the report are very clearly organized and presented
+Be more broad because the audience is wider (not people from TD bank, etc)
+Give more concrete examples for improvements
+Concrete metric evaluation for improvement
+More demo feel for final presentation, more interesting
+Show this is the interface, etc
+We could even do screenshots → live demo might be too slow
+
+Final presentation - reserved a different room, May 2, 2025 (hybrid session)
+Some affiliates in person and some remote (on zoom)
+Enough space and time for all of us to present together if we want to, our choice
+4-5 weeks from now until the presentation
+
+Final report
+Due at the end of the semester
+Two weeks after the final presentation to finish up the report
+
+Next steps for our team
+Improving the performance and quality of the answers from the LLM
+Integrating reranking modules (Cohere and two-stage)
+Working on developing/implementing the abstention and hybrid search
+
+Notes
+New room reserved for Friday, May 2 for final presentations
+Hybrid session
+Affiliates: some in person, some remote
+We can all present together if we want
+Final report due two weeks after that
+Include more in the final presentation on:
+Give concrete examples on what changed
+Screenshots instead of a live demo
+Give examples of reranking, what it is and what it achieves

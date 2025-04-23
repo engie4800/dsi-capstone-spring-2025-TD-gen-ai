@@ -1,0 +1,32 @@
+Week 10 Check-In (4/23/25)
+1a. Weekly mentor meeting attendance (for missing members, provide reason):
+Last week was the US and Canada Holiday, so we didn't have a meeting. 
+
+1b. Was there a good discussion/Did you get your questions answered/requests responded to?
+Although we didn't have a meeting, we sent the email to the mentor. The mentor gave us some suggestions. 
+
+1c. Any issues with the mentor communication?
+No
+
+2a. Team working meeting attendance (for missing members, provide reason):
+
+Everyone attended
+
+2b. Was there a discussion on the work?
+Progress:
+- Hybrid search is integrated
+- Demo is finished and ready
+- Need testing for precision and recall (Get some challenges on unanswerable questions)
+- Need to schedule a demo (will show on April 25)
+Upcoming:
+- 4/18 mentor meeting? No, Good Friday (holiday for US and Canada)
+- Presentation logistics
+  - Availability on 4/28 for practice presentations
+  - People present: Gregor + Brianna
+- Ethics Group Project (Due next week) ~3000 word report
+
+Notes
+Sinning will invite us to the Wednesday online rehearsal (April 30). -> Gregor has a conflict at this time; it will be rescheduled. 
+She will also attend the Friday mentor meeting (April 25). 
+Give suggestions about evaluation (Ask questions manually for 20-30 questions). 
+Some screenshots of the questions asked can be shown in the final presentation.

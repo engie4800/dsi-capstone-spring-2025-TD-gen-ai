@@ -1,0 +1,38 @@
+Week 4 Check In (3/3/25)
+1a. Weekly mentor meeting attendance (for missing members, provide reason):
+
+Brianna was out of town, but got caught up by the team and meeting notes.
+
+1b. Was there a good discussion/Did you get your questions answered/requests responded to?
+
+Yes, it was a good discussion of our progress and our next steps. Dan plans on meeting us one-on-one this upcoming week.
+
+1c. Any issues with the mentor communication?
+
+No
+
+2a. Team working meeting attendance (for missing members, provide reason):
+
+Everyone attended
+
+2b. Was there a discussion on the work?
+
+Yes, we discussed our progress. We are improving the preprocessing system and have sped it up and added support for multiple environments (using Ollama instead of OpenAI for embeddings to save the API key for testing and demos). We are evaluating our two reranking techniques and started to implement abstention and hybrid search.
+
+2c. Did you have a project management component? Did you make progress? Does everyone know what to do next?
+
+Yes, we are using GitHub projects to keep track of tasks.
+
+2d. Any challenges or roadblocks?
+
+N/A
+
+3. Any questions/feedback?
+
+N/A
+
+Notes
+Midterm report 6-12 pages long, can put stuff in the appendix
+Looking for overall structure to be set up
+The work that was done last semester - can use the same lit review, but need to add new parts (reranking, keyword search (+sparse embedding), abstention, chunk sizes, any data preprocessing changes)
+Can mention what was before (⅓ - ¼) and mention the existing report

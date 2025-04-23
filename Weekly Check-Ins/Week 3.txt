@@ -1,0 +1,41 @@
+Week 3 Check In (2/24/25)
+1a. Weekly mentor meeting attendance (for missing members, provide reason):
+
+Gregor and Sam were not able to make the meeting since we had to change the time to Wednesday.
+
+1b. Was there a good discussion/Did you get your questions answered/requests responded to?
+
+Yes, we had a good discussion with Mohammad and was able to bring up a couple of issues (font formatting, LangChain deprecated warning, suggestions for improving runtime).
+
+1c. Any issues with the mentor communication?
+
+On Wednesday, Mohammad mentioned that Dan was sick. We were planning on meeting Dan in person on Friday, but he did not show up.
+
+2a. Team working meeting attendance (for missing members, provide reason):
+
+Everyone attended
+
+2b. Was there a discussion on the work?
+
+Yes, we all gave our progress updates and talked about new action items and what to discuss in our mentor meeting.
+
+Gregor implemented a Two-Stage Retrieval Re-Ranking algorithm
+Xiqian implemented the Cohere reranking algorithm
+Sam experimented with chunk splitting
+Brianna fixed the LangChain deprecation warning and worked on fixing the font issue
+Xiqian, Dai, and Gregor tried to do evaluation, but both had some problems
+We are evaluating whether either this improved the model’s performance (context relevance, answer relevance, and groundedness)
+Unit tests
+Evaluation.py
+
+2c. Did you have a project management component? Did you make progress? Does everyone know what to do next?
+
+Yes, we have a GitHub project set up with each task.
+
+2d. Any challenges or roadblocks?
+
+N/A
+
+3. Any questions/feedback?
+
+N/A

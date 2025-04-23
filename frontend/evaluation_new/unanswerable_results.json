@@ -1,0 +1,42 @@
+[
+    {
+        "Question": "What was the total number of TD Bank employees who worked remotely on January 1, 2020?",
+        "Expected Answer": "This information is not available.",
+        "Generated Answer": "I'm not confident enough in my answer. Please check the sources or ask a different question.",
+        "Confidence Score": 0.5,
+        "Reason": "The actual output provides surrounding context but fails to directly answer the question about the specific number of TD Bank employees who worked remotely on January 1, 2020.",
+        "Abstained": true
+    },
+    {
+        "Question": "How many new accounts were opened by customers aged between 18 and 25 years old in the fiscal year 2019-2020?",
+        "Expected Answer": "This information is not available.",
+        "Generated Answer": "I'm not confident enough in my answer. Please check the sources or ask a different question.",
+        "Confidence Score": 0.5,
+        "Reason": "The actual output clearly states that it cannot provide an answer due to missing information.",
+        "Abstained": true
+    },
+    {
+        "Question": "What was the exact percentage increase in TD Bank's net interest margin from Q3 2018 to Q4 2019?",
+        "Expected Answer": "This information is not available.",
+        "Generated Answer": "I'm not confident enough in my answer. Please check the sources or ask a different question.",
+        "Confidence Score": 0.5,
+        "Reason": "The actual output provides surrounding context but fails to directly answer the question.",
+        "Abstained": true
+    },
+    {
+        "Question": "How many times did the CEO of TD Bank travel internationally for business purposes in the year 2020?",
+        "Expected Answer": "This information is not available.",
+        "Generated Answer": "I'm not confident enough in my answer. Please check the sources or ask a different question.",
+        "Confidence Score": 0.5,
+        "Reason": "The actual output clearly states that there is no information about the number of times the CEO traveled internationally in 2020.",
+        "Abstained": true
+    },
+    {
+        "Question": "What was the total amount of loans issued to customers in the technology sector in the first quarter of 2021?",
+        "Expected Answer": "This information is not available.",
+        "Generated Answer": "I'm not confident enough in my answer. Please check the sources or ask a different question.",
+        "Confidence Score": 0.5,
+        "Reason": "The actual output provides some insights but fails to directly answer the question about the total amount of loans issued in Q1 2021 for the technology sector.",
+        "Abstained": true
+    }
+]

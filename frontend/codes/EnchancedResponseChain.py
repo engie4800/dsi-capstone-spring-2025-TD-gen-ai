@@ -117,13 +117,33 @@ class EnhancedResponseChain:
         logits = output.logits
         values, _ = torch.max(torch.log(1 + torch.relu(logits)), dim=2)
         values = values.squeeze(0)
-        indices = torch.nonzero(values > 0).squeeze(1)
+        #indices = torch.nonzero(values > 0).squeeze(1)
+        mask = (values > 0)
+        indices = mask.nonzero(as_tuple=True)[0]
+
         values = values[indices]
 
         return {
             "indices": indices.tolist(),
             "values": values.tolist()
         }
+
+    # @torch.no_grad()
+    # def get_splade_embedding(text, tokenizer, model, max_length=512):
+    #     tokens = tokenizer(text, return_tensors="pt", max_length=max_length, truncation=True, padding=True)
+    #     with torch.no_grad():
+    #         output = model(**tokens)
+    #
+    #     logits = output.logits
+    #     values, _ = torch.max(torch.log(1 + torch.relu(logits)), dim=2)
+    #     values = values.squeeze(0)
+    #     indices = torch.nonzero(values > 0).squeeze(1)
+    #     values = values[indices]
+    #
+    #     return {
+    #         "indices": indices.tolist(),
+    #         "values": values.tolist()
+    #     }
 
     def cosine_similarity(self, vec1, vec2):
         """Compute cosine similarity between two vectors."""

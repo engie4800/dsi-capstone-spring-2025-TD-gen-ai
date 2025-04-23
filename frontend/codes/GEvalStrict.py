@@ -24,3 +24,25 @@ class GEvalStrict(GEval):
         )
 
         return base_prompt + strict_instructions
+
+    def evaluate(self, test_case: LLMTestCase):
+        score, reason = super().evaluate(test_case)
+
+        # Normalize case and trim
+        reason_lower = reason.lower().strip()
+
+        # Heuristic post-filters to down-rank evasive answers
+        penalizing_phrases = [
+            "does not contain",
+            "not possible to determine",
+            "unavailable",
+            "without more specific data",
+            "however",
+            "unfortunately",
+            "not explicitly stated",
+        ]
+
+        if any(p in reason_lower for p in penalizing_phrases):
+            score = min(score, 0.4)
+
+        return score, reason

@@ -1,0 +1,29 @@
+time <cr.txt
+call .\process_file_openai data\2021_annual_report 2020-11-01 2021-10-31 --backend openai gpt-4o --pinecone_index_name td-bank-docs-openai text-embedding-ada-002
+call .\process_file_openai data\2022_annual_report 2021-11-01 2022-10-31 --backend openai gpt-4o --pinecone_index_name td-bank-docs-openai text-embedding-ada-002
+call .\process_file_openai data\2022_q1_report 2021-11-01 2022-01-31 --backend openai gpt-4o --pinecone_index_name td-bank-docs-openai text-embedding-ada-002
+call .\process_file_openai data\2022_q1_transcript 2021-11-01 2022-01-31 --backend openai gpt-4o --pinecone_index_name td-bank-docs-openai text-embedding-ada-002
+call .\process_file_openai data\2022_q2_report 2022-02-01 2022-04-30 --backend openai gpt-4o --pinecone_index_name td-bank-docs-openai text-embedding-ada-002
+call .\process_file_openai data\2022_q2_transcript 2022-02-01 2022-04-30 --backend openai gpt-4o --pinecone_index_name td-bank-docs-openai text-embedding-ada-002
+call .\process_file_openai data\2022_q3_report 2022-05-01 2022-07-31 --backend openai gpt-4o --pinecone_index_name td-bank-docs-openai text-embedding-ada-002
+call .\process_file_openai data\2022_q3_transcript 2022-05-01 2022-07-31 --backend openai gpt-4o --pinecone_index_name td-bank-docs-openai text-embedding-ada-002
+call .\process_file_openai data\2022_q4_transcript 2022-08-01 2022-10-31 --backend openai gpt-4o --pinecone_index_name td-bank-docs-openai text-embedding-ada-002
+call .\process_file_openai data\2023_annual_report 2022-11-01 2023-10-31 --backend openai gpt-4o --pinecone_index_name td-bank-docs-openai text-embedding-ada-002
+call .\process_file_openai data\2023_q1_report 2022-11-01 2023-01-31 --backend openai gpt-4o --pinecone_index_name td-bank-docs-openai text-embedding-ada-002
+call .\process_file_openai data\2023_q1_transcript 2022-11-01 2023-01-31 --backend openai gpt-4o --pinecone_index_name td-bank-docs-openai text-embedding-ada-002
+call .\process_file_openai data\2023_q2_report 2023-02-01 2023-04-30 --backend openai gpt-4o --pinecone_index_name td-bank-docs-openai text-embedding-ada-002
+call .\process_file_openai data\2023_q2_transcript 2023-02-01 2023-04-30 --backend openai gpt-4o --pinecone_index_name td-bank-docs-openai text-embedding-ada-002
+call .\process_file_openai data\2023_q3_report 2023-05-01 2023-07-31 --backend openai gpt-4o --pinecone_index_name td-bank-docs-openai text-embedding-ada-002
+call .\process_file_openai data\2023_q3_transcript 2023-05-01 2023-07-31 --backend openai gpt-4o --pinecone_index_name td-bank-docs-openai text-embedding-ada-002
+call .\process_file_openai data\2023_q4_transcript 2023-08-01 2023-10-31 --backend openai gpt-4o --pinecone_index_name td-bank-docs-openai text-embedding-ada-002
+call .\process_file_openai data\2024_annual_report 2023-11-01 2024-10-31 --backend openai gpt-4o --pinecone_index_name td-bank-docs-openai text-embedding-ada-002
+call .\process_file_openai data\2024_q1_report 2023-11-01 2024-01-31 --backend openai gpt-4o --pinecone_index_name td-bank-docs-openai text-embedding-ada-002
+call .\process_file_openai data\2024_q1_transcript 2023-11-01 2024-01-31 --backend openai gpt-4o --pinecone_index_name td-bank-docs-openai text-embedding-ada-002
+call .\process_file_openai data\2024_q2_report 2024-02-01 2024-04-30 --backend openai gpt-4o --pinecone_index_name td-bank-docs-openai text-embedding-ada-002
+call .\process_file_openai data\2024_q2_transcript 2024-02-01 2024-04-30 --backend openai gpt-4o --pinecone_index_name td-bank-docs-openai text-embedding-ada-002
+call .\process_file_openai data\2024_q3_report 2024-05-01 2024-07-31 --backend openai gpt-4o --pinecone_index_name td-bank-docs-openai text-embedding-ada-002
+call .\process_file_openai data\2024_q3_transcript 2024-05-01 2024-07-31 --backend openai gpt-4o --pinecone_index_name td-bank-docs-openai text-embedding-ada-002
+call .\process_file_openai data\2024_q4_transcript 2024-08-01 2024-10-31 --backend openai gpt-4o --pinecone_index_name td-bank-docs-openai text-embedding-ada-002
+call .\process_file_openai data\2025_q1_report 2024-11-01 2025-01-31 --backend openai gpt-4o --pinecone_index_name td-bank-docs-openai text-embedding-ada-002
+call .\process_file_openai data\2025_q1_transcript 2024-11-01 2025-01-31 --backend openai gpt-4o --pinecone_index_name td-bank-docs-openai text-embedding-ada-002
+time <cr.txt

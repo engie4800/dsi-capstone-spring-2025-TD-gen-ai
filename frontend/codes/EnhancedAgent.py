@@ -32,7 +32,7 @@ class EnhancedAgent:
         if confidence_score < self.confidence_checker.threshold:
             if self.trace_on:
                 print(f"Abstaining! confidence_score={confidence_score} < threshold={self.confidence_checker.threshold}")
-                final_answer = "I'm not confident enough in my answer. Please check the sources or ask a different question."
+            final_answer = "I'm not confident enough in my answer. Please check the sources or ask a different question."
         
         return final_answer, top_context_vectors, confidence_score, reason
     

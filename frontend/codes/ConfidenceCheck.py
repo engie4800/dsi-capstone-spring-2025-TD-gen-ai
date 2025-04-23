@@ -11,11 +11,28 @@ class ConfidenceChecker:
         ge = GEvalStrict(
             name="CorrectnessNoExpectedOutput",
             criteria="Assess whether the actual output is consistent with or does not contradict the input.",
+            # evaluation_steps=[
+            #
+            #     "Check whether 'actual output' clearly contradicts the 'input'",
+            #     "If the input implies certain factual info, see if the 'actual output' is consistent with that",
+            #     "Minor omissions or ambiguities might lower the score slightly",
+            #     "Return a score between 0 and 1, where 1 indicates the question was answered correctly and 0 indicates it was answered incorrectly or was abstained."
+            #     "If the model returns an answer that contains 'I'm not confident enough in my answer.' always return 0."
+            # ],
+            # evaluation_steps=[
+            #     "Check whether the actual output directly answers the question.",
+            #     "If the question asks for specific data and the output fails to provide it, lower the score.",
+            #     "If the actual output evades the question or provides general information instead of an answer, assign a low score.",
+            #     "Only assign a high score (close to 1) if the actual output fully and directly answers the question.",
+            #     "Verbose explanations that do not provide the requested answer should lower the score.",
+            #     "Assign a score of 0 if the output is irrelevant, evasive, or hallucinated."
+            # ],
             evaluation_steps=[
-                "Check whether 'actual output' clearly contradicts the 'input'",
-                "If the input implies certain factual info, see if the 'actual output' is consistent with that",
-                "Minor omissions or ambiguities might lower the score slightly",
-                "Return a score between 0 and 1, where 1 indicates perfect confidence and 0 indicates no confidence"
+                "Does the actual output answer the specific question? If not, assign a low score.",
+                "If the actual output provides surrounding or general context but fails to directly answer the question, assign a score of 0.",
+                "If the question cannot be answered due to missing information, and the actual output clearly states this *without adding distracting speculation*, assign a score up to 0.5.",
+                "If the actual output fabricates information or misleads with approximations or tangents, assign a score of 0.",
+                "Only assign a score near 1.0 if the actual output gives a direct and correct answer to the question."
             ],
             evaluation_params=[LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
             model=llm

@@ -37,3 +37,4 @@ frontend/secrets_ollama-sam.json
 preprocessing/delete_pinecone_index.py
 preprocessing/delete_pinecone_index.py
 preprocessing/delete_pinecone_index.py
+preprocessing/....

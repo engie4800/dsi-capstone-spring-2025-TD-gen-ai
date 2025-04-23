@@ -117,6 +117,7 @@ class EnhancedResponseChain:
         logits = output.logits
         values, _ = torch.max(torch.log(1 + torch.relu(logits)), dim=2)
         values = values.squeeze(0)
+        # the line below was causing runtime errors, th2 lines afterwards seemed to fix this
         #indices = torch.nonzero(values > 0).squeeze(1)
         mask = (values > 0)
         indices = mask.nonzero(as_tuple=True)[0]
